@@ -366,7 +366,7 @@ VENT Il souffle plus fort en automne et fait danser les feuilles`;
             constructor(words) {
                 this.words = words;
                 this.grid = [];
-                this.gridSize = 60; // Augmenté pour plus d'espace
+                this.gridSize = 70; // Grille encore plus grande pour maximum de flexibilité
                 this.placedWords = [];
             }
 
@@ -374,23 +374,26 @@ VENT Il souffle plus fort en automne et fait danser les feuilles`;
                 let bestResult = null;
                 let maxPlaced = 0;
 
-                // Essayer 20 fois avec différentes stratégies
-                for (let attempt = 0; attempt < 20; attempt++) {
+                // Essayer 30 fois avec différentes stratégies
+                for (let attempt = 0; attempt < 30; attempt++) {
                     this.initGrid();
                     this.placedWords = [];
                     
                     if (this.words.length === 0) return null;
                     
-                    // Mélanger les mots pour chaque tentative (sauf les 5 premières)
-                    let wordsToPlace = attempt < 5 ? 
+                    // Mélanger les mots pour chaque tentative (sauf les 3 premières)
+                    let wordsToPlace = attempt < 3 ? 
                         [...this.words].sort((a, b) => b.word.length - a.word.length) :
                         this.shuffleArray([...this.words]);
                     
-                    // Place le premier mot
+                    // Place le premier mot avec variation d'orientation et de position
                     const firstWord = wordsToPlace[0];
-                    const startRow = Math.floor(this.gridSize / 2);
-                    const startCol = Math.floor((this.gridSize - firstWord.word.length) / 2);
                     const horizontal = attempt % 2 === 0; // Alterner entre horizontal et vertical
+                    
+                    // Varier la position de départ pour plus de diversité
+                    const offsetVariation = (attempt % 5) - 2; // -2, -1, 0, 1, 2
+                    const startRow = Math.floor(this.gridSize / 2) + offsetVariation;
+                    const startCol = Math.floor((this.gridSize - firstWord.word.length) / 2) + offsetVariation;
                     
                     this.placeWord(firstWord, startRow, startCol, horizontal);
                     
@@ -398,8 +401,8 @@ VENT Il souffle plus fort en automne et fait danser les feuilles`;
                     for (let i = 1; i < wordsToPlace.length; i++) {
                         let placed = false;
                         
-                        // Essayer jusqu'à 200 positions différentes
-                        for (let tryCount = 0; tryCount < 200 && !placed; tryCount++) {
+                        // Essayer jusqu'à 300 positions différentes
+                        for (let tryCount = 0; tryCount < 300 && !placed; tryCount++) {
                             placed = this.findAndPlaceWord(wordsToPlace[i]);
                         }
                         
@@ -517,8 +520,8 @@ VENT Il souffle plus fort en automne et fait danser les feuilles`;
                     // Trier par score (nombre d'intersections)
                     possiblePlacements.sort((a, b) => b.score - a.score);
                     
-                    // Prendre une des meilleures positions (avec un peu d'aléatoire)
-                    const topCount = Math.min(3, possiblePlacements.length);
+                    // Prendre une des meilleures positions (avec un peu d'aléatoire pour plus de variété)
+                    const topCount = Math.min(5, possiblePlacements.length);
                     const randomIndex = Math.floor(Math.random() * topCount);
                     const best = possiblePlacements[randomIndex];
                     
@@ -586,6 +589,7 @@ VENT Il souffle plus fort en automne et fait danser les feuilles`;
 
             scorePosition(word, row, col, horizontal) {
                 let score = 0;
+                let intersections = 0;
                 
                 // Compter le nombre d'intersections
                 for (let i = 0; i < word.length; i++) {
@@ -593,15 +597,21 @@ VENT Il souffle plus fort en automne et fait danser les feuilles`;
                     const c = horizontal ? col + i : col;
                     
                     if (this.grid[r][c].letter === word[i]) {
-                        score += 10;
+                        intersections++;
+                        score += 15; // Bonus plus élevé pour chaque intersection
                     }
+                }
+                
+                // Bonus supplémentaire pour les mots avec plusieurs intersections
+                if (intersections > 1) {
+                    score += intersections * 5; // Bonus exponentiel
                 }
                 
                 // Bonus pour les positions plus centrales
                 const centerRow = this.gridSize / 2;
                 const centerCol = this.gridSize / 2;
                 const distanceFromCenter = Math.abs(row - centerRow) + Math.abs(col - centerCol);
-                score -= distanceFromCenter * 0.1;
+                score -= distanceFromCenter * 0.05;
                 
                 return score;
             }
@@ -703,7 +713,7 @@ VENT Il souffle plus fort en automne et fait danser les feuilles`;
 
             // Afficher le chargement
             document.getElementById('message').className = 'loading';
-            document.getElementById('message').textContent = '⏳ Génération en cours (cela peut prendre quelques secondes)...';
+            document.getElementById('message').textContent = '⏳ Génération en cours (cela peut prendre 10-15 secondes pour placer tous les mots)...';
             document.getElementById('message').style.display = 'block';
 
             setTimeout(() => {
@@ -884,7 +894,7 @@ VENT Il souffle plus fort en automne et fait danser les feuilles`;
                                 doc.setFontSize(cellSize * 2.5);
                                 doc.setFont(undefined, 'bold');
                                 doc.setTextColor(0, 0, 0);
-                                doc.text(cell.letter, x + cellSize / 2, y + cellSize * 0.70, { align: 'center' }); // Meilleur centrage vertical
+                                doc.text(cell.letter, x + cellSize / 2, y + cellSize * 0.73, { align: 'center' }); // Centrage vertical optimal
                             }
                         }
                     }
