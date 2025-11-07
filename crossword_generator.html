@@ -14,7 +14,7 @@
 
         body {
             font-family: Arial, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: #000000;
             padding: 20px;
             min-height: 100vh;
         }
@@ -30,7 +30,7 @@
 
         h1 {
             text-align: center;
-            color: #667eea;
+            color: #000000;
             margin-bottom: 10px;
             font-size: 2.5em;
         }
@@ -85,6 +85,53 @@
             font-style: italic;
         }
 
+        .color-options {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+            margin-top: 10px;
+        }
+
+        .color-option {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+            background: white;
+        }
+
+        .color-option:hover {
+            border-color: #000;
+            transform: translateY(-2px);
+            box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+        }
+
+        .color-option input[type="radio"] {
+            cursor: pointer;
+        }
+
+        .color-option input[type="radio"]:checked + .color-swatch {
+            border: 3px solid #000;
+        }
+
+        .color-swatch {
+            width: 30px;
+            height: 30px;
+            border-radius: 5px;
+            border: 2px solid #ccc;
+            transition: all 0.3s;
+        }
+
+        .color-name {
+            font-size: 14px;
+            font-weight: 500;
+            color: #333;
+        }
+
         .button-group {
             display: flex;
             gap: 15px;
@@ -105,23 +152,23 @@
         }
 
         .btn-primary {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: #000000;
             color: white;
         }
 
         .btn-primary:hover {
             transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.6);
         }
 
         .btn-success {
-            background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+            background: #FF6B6B;
             color: white;
         }
 
         .btn-success:hover {
             transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(56, 239, 125, 0.4);
+            box-shadow: 0 5px 15px rgba(255, 107, 107, 0.5);
         }
 
         .btn-secondary {
@@ -131,6 +178,17 @@
 
         .btn-secondary:hover {
             background: #e0e0e0;
+        }
+
+        .btn-png {
+            background: #FFD93D;
+            color: #000;
+            font-weight: bold;
+        }
+
+        .btn-png:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(255, 217, 61, 0.5);
         }
 
         button:disabled {
@@ -146,7 +204,7 @@
         }
 
         .preview-section h2 {
-            color: #667eea;
+            color: #000000;
             margin-bottom: 20px;
             text-align: center;
         }
@@ -189,7 +247,7 @@
             left: 4px;
             font-size: 9px;
             font-weight: bold;
-            color: #667eea;
+            color: #000000;
         }
 
         .clues-container {
@@ -206,7 +264,7 @@
         }
 
         .clues-section h3 {
-            color: #667eea;
+            color: #000000;
             margin-bottom: 15px;
             font-size: 1.3em;
         }
@@ -218,7 +276,7 @@
 
         .clue-number {
             font-weight: bold;
-            color: #667eea;
+            color: #000000;
             margin-right: 5px;
         }
 
@@ -243,7 +301,7 @@
         .loading {
             text-align: center;
             padding: 20px;
-            color: #667eea;
+            color: #000000;
             font-size: 1.2em;
         }
 
@@ -268,6 +326,10 @@
             button {
                 min-width: 100%;
             }
+            
+            .color-options {
+                grid-template-columns: 1fr;
+            }
         }
     </style>
 </head>
@@ -283,6 +345,57 @@
             </div>
 
             <div class="input-group">
+                <label>Couleur de la grille :</label>
+                <div class="color-options">
+                    <label class="color-option">
+                        <input type="radio" name="gridColor" value="#FF6B6B" checked>
+                        <span class="color-swatch" style="background: #FF6B6B;"></span>
+                        <span class="color-name">Rouge corail</span>
+                    </label>
+                    <label class="color-option">
+                        <input type="radio" name="gridColor" value="#FFA552">
+                        <span class="color-swatch" style="background: #FFA552;"></span>
+                        <span class="color-name">Orange doux</span>
+                    </label>
+                    <label class="color-option">
+                        <input type="radio" name="gridColor" value="#FFD93D">
+                        <span class="color-swatch" style="background: #FFD93D;"></span>
+                        <span class="color-name">Jaune doré</span>
+                    </label>
+                    <label class="color-option">
+                        <input type="radio" name="gridColor" value="#91C499">
+                        <span class="color-swatch" style="background: #91C499;"></span>
+                        <span class="color-name">Vert sauge</span>
+                    </label>
+                    <label class="color-option">
+                        <input type="radio" name="gridColor" value="#2E8B57">
+                        <span class="color-swatch" style="background: #2E8B57;"></span>
+                        <span class="color-name">Vert forêt</span>
+                    </label>
+                    <label class="color-option">
+                        <input type="radio" name="gridColor" value="#4BA3C3">
+                        <span class="color-swatch" style="background: #4BA3C3;"></span>
+                        <span class="color-name">Bleu azur</span>
+                    </label>
+                    <label class="color-option">
+                        <input type="radio" name="gridColor" value="#2C497F">
+                        <span class="color-swatch" style="background: #2C497F;"></span>
+                        <span class="color-name">Bleu profond</span>
+                    </label>
+                    <label class="color-option">
+                        <input type="radio" name="gridColor" value="#7E57C2">
+                        <span class="color-swatch" style="background: #7E57C2;"></span>
+                        <span class="color-name">Violet prune</span>
+                    </label>
+                    <label class="color-option">
+                        <input type="radio" name="gridColor" value="#E056FD">
+                        <span class="color-swatch" style="background: #E056FD;"></span>
+                        <span class="color-name">Rose framboise</span>
+                    </label>
+                </div>
+            </div>
+
+            <div class="input-group">
                 <label for="words">Mots et indices :</label>
                 <textarea id="words" placeholder="Entrez un mot, un espace, puis l'indice. Un par ligne.&#10;Exemple:&#10;CHAT Animal domestique qui miaule&#10;CHIEN Meilleur ami de l'homme"></textarea>
                 <p class="help-text">💡 Format: MOT Indice (un espace entre le mot et l'indice, un mot par ligne)</p>
@@ -290,7 +403,7 @@
 
             <div class="button-group">
                 <button class="btn-primary" onclick="generateCrossword()">✨ Générer les mots entrecroisés</button>
-                <button class="btn-secondary" onclick="loadExample()">📝 Charger l'exemple automne</button>
+                <button class="btn-secondary" onclick="loadExample()">🍁 Charger l'exemple de "L'automne"</button>
             </div>
         </div>
 
@@ -302,14 +415,19 @@
             
             <div class="button-group">
                 <button class="btn-success" onclick="downloadPDF()">📥 Télécharger en PDF</button>
-                <button class="btn-secondary" onclick="downloadPDFWithAnswers()">📥 PDF avec corrigé</button>
-                <button class="btn-success" onclick="downloadPNG()">🖼️ Télécharger en PNG</button>
+                <button class="btn-success" onclick="downloadPDFWithAnswers()">📥 PDF avec corrigé</button>
+                <button class="btn-png" onclick="downloadPNG()">🖼️ Télécharger en PNG</button>
             </div>
         </div>
     </div>
 
     <script>
         let currentCrossword = null;
+
+        function getSelectedGridColor() {
+            const selected = document.querySelector('input[name="gridColor"]:checked');
+            return selected ? selected.value : '#FF6B6B';
+        }
 
         function loadExample() {
             const exampleText = `CHRYSANTHÈME Fleur aux nombreux pétales qui fleurit en automne
@@ -766,6 +884,8 @@ VENT Il souffle plus fort en automne et fait danser les feuilles`;
             gridDiv.className = 'crossword-grid';
             gridDiv.style.gridTemplateColumns = `repeat(${crossword.grid[0].length}, 35px)`;
             gridDiv.style.gridTemplateRows = `repeat(${crossword.grid.length}, 35px)`;
+            
+            const gridColor = getSelectedGridColor();
 
             for (let row of crossword.grid) {
                 for (let cell of row) {
@@ -775,6 +895,7 @@ VENT Il souffle plus fort en automne et fait danser les feuilles`;
                     if (cell.letter === null) {
                         cellDiv.classList.add('black');
                     } else {
+                        cellDiv.style.borderColor = gridColor;
                         if (cell.number) {
                             const numSpan = document.createElement('span');
                             numSpan.className = 'cell-number';
@@ -838,6 +959,8 @@ VENT Il souffle plus fort en automne et fait danser les feuilles`;
                 const pageWidth = 215.9;
                 const pageHeight = 279.4;
                 const margin = 12;
+                
+                const gridColor = getSelectedGridColor();
 
                 // Titre en haut
                 doc.setFontSize(22);
@@ -868,6 +991,16 @@ VENT Il souffle plus fort en automne et fait danser les feuilles`;
                 // Dessiner la grille
                 doc.setLineWidth(0.4);
                 
+                // Convertir hex en RGB pour jsPDF
+                const hexToRgb = (hex) => {
+                    const r = parseInt(hex.slice(1, 3), 16);
+                    const g = parseInt(hex.slice(3, 5), 16);
+                    const b = parseInt(hex.slice(5, 7), 16);
+                    return { r, g, b };
+                };
+                
+                const color = hexToRgb(gridColor);
+                
                 for (let i = 0; i < rows; i++) {
                     for (let j = 0; j < cols; j++) {
                         const x = gridX + j * cellSize;
@@ -878,14 +1011,14 @@ VENT Il souffle plus fort en automne et fait danser les feuilles`;
                             continue;
                         } else {
                             doc.setFillColor(255, 255, 255);
-                            doc.setDrawColor(80, 80, 80);
+                            doc.setDrawColor(color.r, color.g, color.b);
                             doc.rect(x, y, cellSize, cellSize, 'FD');
                             
                             // Numéro (seulement si pas de réponses)
                             if (cell.number && !withAnswers) {
                                 doc.setFontSize(cellSize * 1.3);
                                 doc.setFont(undefined, 'bold');
-                                doc.setTextColor(102, 126, 234);
+                                doc.setTextColor(0, 0, 0);
                                 doc.text(cell.number.toString(), x + cellSize * 0.18, y + cellSize * 0.42);
                             }
 
@@ -939,6 +1072,12 @@ VENT Il souffle plus fort en automne et fait danser les feuilles`;
                         downY += lines.length * lineHeight;
                     }
                 });
+
+                // Copyright en bas à droite
+                doc.setFontSize(6);
+                doc.setFont(undefined, 'normal');
+                doc.setTextColor(100, 100, 100);
+                doc.text('© The Joyful Classroom', pageWidth - margin, pageHeight - margin + 2, { align: 'right' });
 
                 // Sauvegarder
                 const filename = withAnswers ? 
@@ -1002,8 +1141,9 @@ VENT Il souffle plus fort en automne et fait danser les feuilles`;
                 const gridY = margin + 180;
 
                 // Dessiner la grille
+                const gridColor = getSelectedGridColor();
                 ctx.lineWidth = 3;
-                ctx.strokeStyle = '#666666';
+                ctx.strokeStyle = gridColor;
 
                 for (let i = 0; i < rows; i++) {
                     for (let j = 0; j < cols; j++) {
@@ -1015,7 +1155,7 @@ VENT Il souffle plus fort en automne et fait danser les feuilles`;
                             ctx.strokeRect(x, y, cellSize, cellSize);
                             
                             if (cell.number) {
-                                ctx.fillStyle = '#667eea';
+                                ctx.fillStyle = '#000000';
                                 ctx.font = `bold ${cellSize * 0.28}px Arial`;
                                 ctx.textAlign = 'left';
                                 ctx.fillText(cell.number.toString(), x + cellSize * 0.12, y + cellSize * 0.32);
@@ -1083,6 +1223,12 @@ VENT Il souffle plus fort en automne et fait danser les feuilles`;
                         });
                     }
                 });
+
+                // Copyright en bas à droite
+                ctx.fillStyle = '#666666';
+                ctx.font = '20px Arial';
+                ctx.textAlign = 'right';
+                ctx.fillText('© The Joyful Classroom', width - margin, height - margin + 10);
 
                 // Convertir en PNG et télécharger
                 canvas.toBlob(function(blob) {
