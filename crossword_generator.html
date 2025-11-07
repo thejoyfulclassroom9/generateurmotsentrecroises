@@ -371,32 +371,57 @@ VENT Il souffle plus fort en automne et fait danser les feuilles`;
             }
 
             generate() {
-                this.initGrid();
-                
-                if (this.words.length === 0) return null;
-                
-                // Place first word horizontally in center
-                const firstWord = this.words[0];
-                const startRow = Math.floor(this.gridSize / 2);
-                const startCol = Math.floor((this.gridSize - firstWord.word.length) / 2);
-                
-                this.placeWord(firstWord, startRow, startCol, true);
-                
-                // Try to place remaining words
-                for (let i = 1; i < this.words.length; i++) {
-                    this.findAndPlaceWord(this.words[i]);
+                // Try multiple times to get best result
+                let bestResult = null;
+                let maxPlaced = 0;
+
+                for (let attempt = 0; attempt < 5; attempt++) {
+                    this.initGrid();
+                    this.placedWords = [];
+                    
+                    if (this.words.length === 0) return null;
+                    
+                    // Place first word horizontally in center
+                    const firstWord = this.words[0];
+                    const startRow = Math.floor(this.gridSize / 2);
+                    const startCol = Math.floor((this.gridSize - firstWord.word.length) / 2);
+                    
+                    this.placeWord(firstWord, startRow, startCol, true);
+                    
+                    // Try to place remaining words with multiple attempts per word
+                    for (let i = 1; i < this.words.length; i++) {
+                        let placed = false;
+                        // Try up to 50 different positions for each word
+                        for (let tryCount = 0; tryCount < 50 && !placed; tryCount++) {
+                            placed = this.findAndPlaceWord(this.words[i]);
+                        }
+                        
+                        if (!placed) {
+                            console.warn(`Could not place word: ${this.words[i].word}`);
+                        }
+                    }
+                    
+                    if (this.placedWords.length > maxPlaced) {
+                        maxPlaced = this.placedWords.length;
+                        // Trim and renumber before saving
+                        this.trimGrid();
+                        this.renumberWords();
+                        
+                        bestResult = {
+                            grid: JSON.parse(JSON.stringify(this.grid)),
+                            words: JSON.parse(JSON.stringify(this.placedWords)),
+                            across: this.placedWords.filter(w => w.horizontal).sort((a, b) => a.number - b.number),
+                            down: this.placedWords.filter(w => !w.horizontal).sort((a, b) => a.number - b.number)
+                        };
+                    }
+                    
+                    // If all words placed, we're done
+                    if (this.placedWords.length === this.words.length) {
+                        break;
+                    }
                 }
                 
-                // Trim grid and renumber
-                this.trimGrid();
-                this.renumberWords();
-                
-                return {
-                    grid: this.grid,
-                    words: this.placedWords,
-                    across: this.placedWords.filter(w => w.horizontal).sort((a, b) => a.number - b.number),
-                    down: this.placedWords.filter(w => !w.horizontal).sort((a, b) => a.number - b.number)
-                };
+                return bestResult;
             }
 
             initGrid() {
@@ -413,7 +438,7 @@ VENT Il souffle plus fort en automne et fait danser les feuilles`;
                     row: row,
                     col: col,
                     horizontal: horizontal,
-                    number: 0, // Will be renumbered later
+                    number: 0,
                     length: word.length
                 };
 
@@ -438,20 +463,16 @@ VENT Il souffle plus fort en automne et fait danser les feuilles`;
                 for (let placedWord of this.placedWords) {
                     const placedWordStr = placedWord.word.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
                     
-                    // Check each letter in new word against placed word
                     for (let i = 0; i < word.length; i++) {
                         for (let j = 0; j < placedWordStr.length; j++) {
                             if (word[i] === placedWordStr[j]) {
-                                // Found matching letter
                                 let newRow, newCol, horizontal;
 
                                 if (placedWord.horizontal) {
-                                    // Place new word vertically
                                     horizontal = false;
                                     newRow = placedWord.row - i;
                                     newCol = placedWord.col + j;
                                 } else {
-                                    // Place new word horizontally
                                     horizontal = true;
                                     newRow = placedWord.row + j;
                                     newCol = placedWord.col - i;
@@ -470,7 +491,6 @@ VENT Il souffle plus fort en automne et fait danser les feuilles`;
                     }
                 }
 
-                // Sort by score and place best position
                 if (possiblePlacements.length > 0) {
                     possiblePlacements.sort((a, b) => b.score - a.score);
                     const best = possiblePlacements[0];
@@ -489,38 +509,36 @@ VENT Il souffle plus fort en automne et fait danser les feuilles`;
                 
                 if (endRow >= this.gridSize - 1 || endCol >= this.gridSize - 1) return false;
 
-                // Check if word fits and doesn't conflict
+                // Check each cell
                 for (let i = 0; i < word.length; i++) {
                     const r = horizontal ? row : row + i;
                     const c = horizontal ? col + i : col;
 
                     const cell = this.grid[r][c].letter;
                     
-                    // If cell is occupied, it must match
                     if (cell !== null && cell !== word[i]) {
                         return false;
                     }
 
-                    // Check perpendicular cells
-                    if (cell === null) {
+                    // Check perpendicular cells (must be empty unless it's an intersection)
+                    if (cell === null || cell !== word[i]) {
                         if (horizontal) {
-                            // Check above and below
                             if (this.grid[r - 1][c].letter !== null) return false;
                             if (this.grid[r + 1][c].letter !== null) return false;
-                            
-                            // Check start and end don't touch other words
-                            if (i === 0 && c > 0 && this.grid[r][c - 1].letter !== null) return false;
-                            if (i === word.length - 1 && c < this.gridSize - 1 && this.grid[r][c + 1].letter !== null) return false;
                         } else {
-                            // Check left and right
                             if (this.grid[r][c - 1].letter !== null) return false;
                             if (this.grid[r][c + 1].letter !== null) return false;
-                            
-                            // Check start and end don't touch other words
-                            if (i === 0 && r > 0 && this.grid[r - 1][c].letter !== null) return false;
-                            if (i === word.length - 1 && r < this.gridSize - 1 && this.grid[r + 1][c].letter !== null) return false;
                         }
                     }
+                }
+
+                // Check cells before and after word
+                if (horizontal) {
+                    if (col > 0 && this.grid[row][col - 1].letter !== null) return false;
+                    if (endCol < this.gridSize - 1 && this.grid[row][endCol + 1].letter !== null) return false;
+                } else {
+                    if (row > 0 && this.grid[row - 1][col].letter !== null) return false;
+                    if (endRow < this.gridSize - 1 && this.grid[endRow + 1][col].letter !== null) return false;
                 }
 
                 return true;
@@ -529,13 +547,12 @@ VENT Il souffle plus fort en automne et fait danser les feuilles`;
             scorePosition(word, row, col, horizontal) {
                 let score = 0;
                 
-                // Count intersections
                 for (let i = 0; i < word.length; i++) {
                     const r = horizontal ? row : row + i;
                     const c = horizontal ? col + i : col;
                     
                     if (this.grid[r][c].letter === word[i]) {
-                        score += 10; // Reward intersections
+                        score += 10;
                     }
                 }
                 
@@ -557,7 +574,6 @@ VENT Il souffle plus fort en automne et fait danser les feuilles`;
                     }
                 }
 
-                // Add padding
                 minRow = Math.max(0, minRow - 1);
                 maxRow = Math.min(this.gridSize - 1, maxRow + 1);
                 minCol = Math.max(0, minCol - 1);
@@ -568,7 +584,6 @@ VENT Il souffle plus fort en automne et fait danser les feuilles`;
                     newGrid.push(this.grid[i].slice(minCol, maxCol + 1));
                 }
 
-                // Update placed words positions
                 for (let word of this.placedWords) {
                     word.row -= minRow;
                     word.col -= minCol;
@@ -578,7 +593,6 @@ VENT Il souffle plus fort en automne et fait danser les feuilles`;
             }
 
             renumberWords() {
-                // Create a list of all starting positions
                 const positions = [];
                 
                 for (let word of this.placedWords) {
@@ -597,20 +611,17 @@ VENT Il souffle plus fort en automne et fait danser les feuilles`;
                     }
                 }
 
-                // Sort positions by row then column
                 positions.sort((a, b) => {
                     if (a.row !== b.row) return a.row - b.row;
                     return a.col - b.col;
                 });
 
-                // Assign numbers
                 for (let i = 0; i < positions.length; i++) {
                     const pos = positions[i];
                     for (let word of pos.words) {
                         word.number = i + 1;
                     }
                     
-                    // Mark in grid
                     this.grid[pos.row][pos.col].number = i + 1;
                 }
             }
@@ -651,7 +662,15 @@ VENT Il souffle plus fort en automne et fait danser les feuilles`;
                     if (currentCrossword && currentCrossword.words.length > 0) {
                         displayCrossword(currentCrossword);
                         document.getElementById('preview').style.display = 'block';
-                        showMessage(`✅ ${currentCrossword.words.length} mots placés avec succès!`, "success");
+                        
+                        const totalWords = words.length;
+                        const placedWords = currentCrossword.words.length;
+                        
+                        if (placedWords < totalWords) {
+                            showMessage(`⚠️ ${placedWords}/${totalWords} mots placés. Certains mots n'ont pas pu être placés (essayez avec des mots différents ou moins de mots).`, "error");
+                        } else {
+                            showMessage(`✅ ${placedWords} mots placés avec succès!`, "success");
+                        }
                         
                         // Scroll to preview
                         document.getElementById('preview').scrollIntoView({ behavior: 'smooth' });
