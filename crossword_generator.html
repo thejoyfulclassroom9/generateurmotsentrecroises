@@ -750,35 +750,34 @@ VENT Il souffle plus fort en automne et fait danser les feuilles`;
                 const pageHeight = 279.4;
                 const margin = 12;
 
-                // Title
+                // Title at top
                 doc.setFontSize(22);
                 doc.setFont(undefined, 'bold');
                 doc.text(currentCrossword.title, pageWidth / 2, margin + 8, { align: 'center' });
 
-                // Calculate grid and clues space
+                // Calculate grid dimensions
                 const grid = currentCrossword.grid;
                 const rows = grid.length;
                 const cols = grid[0].length;
                 
-                // Fixed space for clues - estimate based on number of clues
-                const numClues = currentCrossword.words.length;
-                const cluesHeight = Math.max(60, Math.min(90, numClues * 3)); // 60-90mm for clues
+                // Fixed space for clues at bottom (60mm)
+                const cluesHeight = 60;
                 
-                // Available space for grid
+                // Available space for grid (leaves space in middle for images)
                 const availableWidth = pageWidth - 2 * margin;
-                const availableGridHeight = pageHeight - margin - 25 - cluesHeight - 5; // Reserve for title and spacing
+                const maxGridHeight = 110; // Maximum height for grid
                 
                 const cellSizeByWidth = availableWidth / cols;
-                const cellSizeByHeight = availableGridHeight / rows;
-                const cellSize = Math.min(cellSizeByWidth, cellSizeByHeight, 10); // Max 10mm per cell for readability
+                const cellSizeByHeight = maxGridHeight / rows;
+                const cellSize = Math.min(cellSizeByWidth, cellSizeByHeight, 10);
                 
                 const gridWidth = cellSize * cols;
                 const gridHeight = cellSize * rows;
                 const gridX = (pageWidth - gridWidth) / 2;
                 const gridY = margin + 22;
 
-                // Draw grid
-                doc.setLineWidth(0.3);
+                // Draw grid with all cells visible
+                doc.setLineWidth(0.4);
                 
                 for (let i = 0; i < rows; i++) {
                     for (let j = 0; j < cols; j++) {
@@ -787,50 +786,49 @@ VENT Il souffle plus fort en automne et fait danser les feuilles`;
                         const cell = grid[i][j];
 
                         if (cell.letter === null) {
-                            // Empty cell - white with no border
-                            doc.setFillColor(255, 255, 255);
-                            doc.setDrawColor(255, 255, 255);
-                            doc.rect(x, y, cellSize, cellSize, 'FD');
+                            // Empty cell - no border, just white space
+                            continue;
                         } else {
-                            // White cell with border
-                            doc.setDrawColor(100, 100, 100);
-                            doc.rect(x, y, cellSize, cellSize);
+                            // Draw cell with border
+                            doc.setFillColor(255, 255, 255);
+                            doc.setDrawColor(80, 80, 80);
+                            doc.rect(x, y, cellSize, cellSize, 'FD');
                             
                             // Number
                             if (cell.number) {
-                                doc.setFontSize(cellSize * 1.4);
+                                doc.setFontSize(cellSize * 1.5);
                                 doc.setFont(undefined, 'bold');
                                 doc.setTextColor(102, 126, 234);
-                                doc.text(cell.number.toString(), x + cellSize * 0.15, y + cellSize * 0.38);
+                                doc.text(cell.number.toString(), x + cellSize * 0.15, y + cellSize * 0.4);
                             }
 
                             // Letter (if with answers)
                             if (withAnswers && cell.letter) {
-                                doc.setFontSize(cellSize * 2.5);
+                                doc.setFontSize(cellSize * 2.8);
                                 doc.setFont(undefined, 'bold');
                                 doc.setTextColor(0, 0, 0);
-                                doc.text(cell.letter, x + cellSize / 2, y + cellSize / 2 + cellSize * 0.22, { align: 'center' });
+                                doc.text(cell.letter, x + cellSize / 2, y + cellSize * 0.68, { align: 'center' });
                             }
                         }
                     }
                 }
 
-                // Clues section - fixed size
-                const cluesY = gridY + gridHeight + 6;
+                // Clues at BOTTOM of page
+                const cluesY = pageHeight - cluesHeight - margin + 5;
                 const columnWidth = (pageWidth - 2 * margin - 5) / 2;
 
                 doc.setTextColor(0, 0, 0);
-                doc.setFontSize(12);
+                doc.setFontSize(11);
                 doc.setFont(undefined, 'bold');
                 doc.text('Horizontal', margin, cluesY);
                 doc.text('Vertical', margin + columnWidth + 5, cluesY);
 
-                doc.setFontSize(8.5);
+                doc.setFontSize(8);
                 doc.setFont(undefined, 'normal');
 
                 let acrossY = cluesY + 5.5;
                 let downY = cluesY + 5.5;
-                const lineHeight = 4;
+                const lineHeight = 3.8;
                 const maxClueWidth = columnWidth - 2;
 
                 // Horizontal clues
@@ -893,7 +891,7 @@ VENT Il souffle plus fort en automne et fait danser les feuilles`;
 
                 const margin = 100;
 
-                // Title
+                // Title at top
                 ctx.fillStyle = '#000000';
                 ctx.font = 'bold 80px Arial';
                 ctx.textAlign = 'center';
@@ -904,16 +902,15 @@ VENT Il souffle plus fort en automne et fait danser les feuilles`;
                 const rows = grid.length;
                 const cols = grid[0].length;
 
-                // Reserve space for clues
-                const numClues = currentCrossword.words.length;
-                const cluesHeight = Math.max(800, Math.min(1200, numClues * 40));
+                // Fixed space for clues at bottom (800px)
+                const cluesHeight = 800;
                 
-                // Available space for grid
+                // Available space for grid (max 1300px to leave space in middle)
                 const availableWidth = width - 2 * margin;
-                const availableGridHeight = height - margin - 200 - cluesHeight - 80;
+                const maxGridHeight = 1300;
                 
                 const cellSizeByWidth = availableWidth / cols;
-                const cellSizeByHeight = availableGridHeight / rows;
+                const cellSizeByHeight = maxGridHeight / rows;
                 const cellSize = Math.min(cellSizeByWidth, cellSizeByHeight, 120);
                 
                 const gridWidth = cellSize * cols;
@@ -921,7 +918,7 @@ VENT Il souffle plus fort en automne et fait danser les feuilles`;
                 const gridX = (width - gridWidth) / 2;
                 const gridY = margin + 180;
 
-                // Draw grid
+                // Draw grid - only cells with letters
                 ctx.lineWidth = 3;
                 ctx.strokeStyle = '#666666';
 
@@ -938,30 +935,30 @@ VENT Il souffle plus fort en automne et fait danser les feuilles`;
                             // Draw number
                             if (cell.number) {
                                 ctx.fillStyle = '#667eea';
-                                ctx.font = `bold ${cellSize * 0.25}px Arial`;
+                                ctx.font = `bold ${cellSize * 0.28}px Arial`;
                                 ctx.textAlign = 'left';
-                                ctx.fillText(cell.number.toString(), x + cellSize * 0.12, y + cellSize * 0.3);
+                                ctx.fillText(cell.number.toString(), x + cellSize * 0.12, y + cellSize * 0.32);
                             }
                         }
                     }
                 }
 
-                // Draw clues
-                const cluesY = gridY + gridHeight + 60;
+                // Draw clues at BOTTOM of page
+                const cluesY = height - cluesHeight - margin + 50;
                 const columnWidth = (width - 2 * margin - 60) / 2;
 
                 // Titles
                 ctx.fillStyle = '#000000';
-                ctx.font = 'bold 50px Arial';
+                ctx.font = 'bold 48px Arial';
                 ctx.textAlign = 'left';
                 ctx.fillText('Horizontal', margin, cluesY);
                 ctx.fillText('Vertical', margin + columnWidth + 60, cluesY);
 
                 // Clues text
-                ctx.font = '36px Arial';
-                let acrossY = cluesY + 55;
-                let downY = cluesY + 55;
-                const lineHeight = 48;
+                ctx.font = '32px Arial';
+                let acrossY = cluesY + 50;
+                let downY = cluesY + 50;
+                const lineHeight = 42;
 
                 // Helper function to wrap text
                 function wrapText(text, maxWidth) {
