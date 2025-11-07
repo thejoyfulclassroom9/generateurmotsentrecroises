@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Générateur de Mots Croisés</title>
+    <title>Générateur de Mots entrecroisés</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <style>
         * {
@@ -179,14 +179,14 @@
         }
 
         .cell.black {
-            background: #333;
-            border-color: #333;
+            background: white;
+            border-color: white;
         }
 
         .cell-number {
             position: absolute;
-            top: 2px;
-            left: 3px;
+            top: 3px;
+            left: 4px;
             font-size: 9px;
             font-weight: bold;
             color: #667eea;
@@ -273,13 +273,13 @@
 </head>
 <body>
     <div class="container">
-        <h1>🧩 Générateur de Mots Croisés</h1>
-        <p class="subtitle">Créez des mots croisés professionnels en quelques clics!</p>
+        <h1>🧩 Générateur de Mots entrecroisés</h1>
+        <p class="subtitle">Créez des mots entrecroisés professionnels en quelques clics!</p>
 
         <div class="input-section">
             <div class="input-group">
-                <label for="title">Titre des mots croisés :</label>
-                <input type="text" id="title" placeholder="Ex: L'automne, Les animaux, etc." value="Mots Croisés">
+                <label for="title">Titre des mots entrecroisés :</label>
+                <input type="text" id="title" placeholder="Ex: L'automne, Les animaux, etc." value="Mots entrecroisés">
             </div>
 
             <div class="input-group">
@@ -289,7 +289,7 @@
             </div>
 
             <div class="button-group">
-                <button class="btn-primary" onclick="generateCrossword()">✨ Générer les mots croisés</button>
+                <button class="btn-primary" onclick="generateCrossword()">✨ Générer les mots entrecroisés</button>
                 <button class="btn-secondary" onclick="loadExample()">📝 Charger l'exemple automne</button>
             </div>
         </div>
@@ -303,6 +303,7 @@
             <div class="button-group">
                 <button class="btn-success" onclick="downloadPDF()">📥 Télécharger en PDF</button>
                 <button class="btn-secondary" onclick="downloadPDFWithAnswers()">📥 PDF avec corrigé</button>
+                <button class="btn-success" onclick="downloadPNG()">🖼️ Télécharger en PNG</button>
             </div>
         </div>
     </div>
@@ -329,7 +330,7 @@ VENT Il souffle plus fort en automne et fait danser les feuilles`;
             
             document.getElementById('words').value = exampleText;
             document.getElementById('title').value = "L'automne";
-            showMessage("Exemple chargé! Cliquez sur 'Générer les mots croisés'", "success");
+            showMessage("Exemple chargé! Cliquez sur 'Générer les mots entrecroisés'", "success");
         }
 
         function parseInput(text) {
@@ -632,7 +633,7 @@ VENT Il souffle plus fort en automne et fait danser les feuilles`;
             }
 
             if (words.length < 2) {
-                showMessage("Veuillez entrer au moins 2 mots pour créer des mots croisés");
+                showMessage("Veuillez entrer au moins 2 mots pour créer des mots entrecroisés");
                 return;
             }
 
@@ -733,7 +734,7 @@ VENT Il souffle plus fort en automne et fait danser les feuilles`;
 
         function downloadPDF(withAnswers = false) {
             if (!currentCrossword) {
-                showMessage("Veuillez d'abord générer des mots croisés!");
+                showMessage("Veuillez d'abord générer des mots entrecroisés!");
                 return;
             }
 
@@ -754,27 +755,30 @@ VENT Il souffle plus fort en automne et fait danser les feuilles`;
                 doc.setFont(undefined, 'bold');
                 doc.text(currentCrossword.title, pageWidth / 2, margin + 8, { align: 'center' });
 
-                // Calculate optimal grid size
+                // Calculate grid and clues space
                 const grid = currentCrossword.grid;
                 const rows = grid.length;
                 const cols = grid[0].length;
                 
-                // Aim for larger cells - calculate based on available space
+                // Fixed space for clues - estimate based on number of clues
+                const numClues = currentCrossword.words.length;
+                const cluesHeight = Math.max(60, Math.min(90, numClues * 3)); // 60-90mm for clues
+                
+                // Available space for grid
                 const availableWidth = pageWidth - 2 * margin;
-                const availableGridHeight = 130; // Reserve space for clues
+                const availableGridHeight = pageHeight - margin - 25 - cluesHeight - 5; // Reserve for title and spacing
                 
                 const cellSizeByWidth = availableWidth / cols;
                 const cellSizeByHeight = availableGridHeight / rows;
-                const cellSize = Math.min(cellSizeByWidth, cellSizeByHeight, 8); // Max 8mm per cell
+                const cellSize = Math.min(cellSizeByWidth, cellSizeByHeight, 10); // Max 10mm per cell for readability
                 
                 const gridWidth = cellSize * cols;
                 const gridHeight = cellSize * rows;
                 const gridX = (pageWidth - gridWidth) / 2;
-                const gridY = margin + 18;
+                const gridY = margin + 22;
 
                 // Draw grid
-                doc.setLineWidth(0.2);
-                doc.setFontSize(cellSize * 1.8);
+                doc.setLineWidth(0.3);
                 
                 for (let i = 0; i < rows; i++) {
                     for (let j = 0; j < cols; j++) {
@@ -783,49 +787,50 @@ VENT Il souffle plus fort en automne et fait danser les feuilles`;
                         const cell = grid[i][j];
 
                         if (cell.letter === null) {
-                            // Black cell
-                            doc.setFillColor(50, 50, 50);
-                            doc.rect(x, y, cellSize, cellSize, 'F');
+                            // Empty cell - white with no border
+                            doc.setFillColor(255, 255, 255);
+                            doc.setDrawColor(255, 255, 255);
+                            doc.rect(x, y, cellSize, cellSize, 'FD');
                         } else {
-                            // White cell
+                            // White cell with border
                             doc.setDrawColor(100, 100, 100);
                             doc.rect(x, y, cellSize, cellSize);
                             
                             // Number
                             if (cell.number) {
-                                doc.setFontSize(cellSize * 1.3);
+                                doc.setFontSize(cellSize * 1.4);
                                 doc.setFont(undefined, 'bold');
                                 doc.setTextColor(102, 126, 234);
-                                doc.text(cell.number.toString(), x + cellSize * 0.12, y + cellSize * 0.35);
+                                doc.text(cell.number.toString(), x + cellSize * 0.15, y + cellSize * 0.38);
                             }
 
                             // Letter (if with answers)
                             if (withAnswers && cell.letter) {
-                                doc.setFontSize(cellSize * 2.2);
+                                doc.setFontSize(cellSize * 2.5);
                                 doc.setFont(undefined, 'bold');
                                 doc.setTextColor(0, 0, 0);
-                                doc.text(cell.letter, x + cellSize / 2, y + cellSize / 2 + cellSize * 0.2, { align: 'center' });
+                                doc.text(cell.letter, x + cellSize / 2, y + cellSize / 2 + cellSize * 0.22, { align: 'center' });
                             }
                         }
                     }
                 }
 
-                // Clues section
-                const cluesY = gridY + gridHeight + 8;
+                // Clues section - fixed size
+                const cluesY = gridY + gridHeight + 6;
                 const columnWidth = (pageWidth - 2 * margin - 5) / 2;
 
                 doc.setTextColor(0, 0, 0);
-                doc.setFontSize(13);
+                doc.setFontSize(12);
                 doc.setFont(undefined, 'bold');
                 doc.text('Horizontal', margin, cluesY);
                 doc.text('Vertical', margin + columnWidth + 5, cluesY);
 
-                doc.setFontSize(9);
+                doc.setFontSize(8.5);
                 doc.setFont(undefined, 'normal');
 
-                let acrossY = cluesY + 6;
-                let downY = cluesY + 6;
-                const lineHeight = 4.5;
+                let acrossY = cluesY + 5.5;
+                let downY = cluesY + 5.5;
+                const lineHeight = 4;
                 const maxClueWidth = columnWidth - 2;
 
                 // Horizontal clues
@@ -865,6 +870,163 @@ VENT Il souffle plus fort en automne et fait danser les feuilles`;
 
         function downloadPDFWithAnswers() {
             downloadPDF(true);
+        }
+
+        function downloadPNG() {
+            if (!currentCrossword) {
+                showMessage("Veuillez d'abord générer des mots entrecroisés!");
+                return;
+            }
+
+            try {
+                // Letter size at 300 DPI: 8.5" x 11" = 2550px x 3300px
+                const canvas = document.createElement('canvas');
+                const width = 2550;
+                const height = 3300;
+                canvas.width = width;
+                canvas.height = height;
+                const ctx = canvas.getContext('2d');
+
+                // White background
+                ctx.fillStyle = '#ffffff';
+                ctx.fillRect(0, 0, width, height);
+
+                const margin = 100;
+
+                // Title
+                ctx.fillStyle = '#000000';
+                ctx.font = 'bold 80px Arial';
+                ctx.textAlign = 'center';
+                ctx.fillText(currentCrossword.title, width / 2, margin + 80);
+
+                // Calculate grid dimensions
+                const grid = currentCrossword.grid;
+                const rows = grid.length;
+                const cols = grid[0].length;
+
+                // Reserve space for clues
+                const numClues = currentCrossword.words.length;
+                const cluesHeight = Math.max(800, Math.min(1200, numClues * 40));
+                
+                // Available space for grid
+                const availableWidth = width - 2 * margin;
+                const availableGridHeight = height - margin - 200 - cluesHeight - 80;
+                
+                const cellSizeByWidth = availableWidth / cols;
+                const cellSizeByHeight = availableGridHeight / rows;
+                const cellSize = Math.min(cellSizeByWidth, cellSizeByHeight, 120);
+                
+                const gridWidth = cellSize * cols;
+                const gridHeight = cellSize * rows;
+                const gridX = (width - gridWidth) / 2;
+                const gridY = margin + 180;
+
+                // Draw grid
+                ctx.lineWidth = 3;
+                ctx.strokeStyle = '#666666';
+
+                for (let i = 0; i < rows; i++) {
+                    for (let j = 0; j < cols; j++) {
+                        const x = gridX + j * cellSize;
+                        const y = gridY + i * cellSize;
+                        const cell = grid[i][j];
+
+                        if (cell.letter !== null) {
+                            // Draw cell border
+                            ctx.strokeRect(x, y, cellSize, cellSize);
+                            
+                            // Draw number
+                            if (cell.number) {
+                                ctx.fillStyle = '#667eea';
+                                ctx.font = `bold ${cellSize * 0.25}px Arial`;
+                                ctx.textAlign = 'left';
+                                ctx.fillText(cell.number.toString(), x + cellSize * 0.12, y + cellSize * 0.3);
+                            }
+                        }
+                    }
+                }
+
+                // Draw clues
+                const cluesY = gridY + gridHeight + 60;
+                const columnWidth = (width - 2 * margin - 60) / 2;
+
+                // Titles
+                ctx.fillStyle = '#000000';
+                ctx.font = 'bold 50px Arial';
+                ctx.textAlign = 'left';
+                ctx.fillText('Horizontal', margin, cluesY);
+                ctx.fillText('Vertical', margin + columnWidth + 60, cluesY);
+
+                // Clues text
+                ctx.font = '36px Arial';
+                let acrossY = cluesY + 55;
+                let downY = cluesY + 55;
+                const lineHeight = 48;
+
+                // Helper function to wrap text
+                function wrapText(text, maxWidth) {
+                    const words = text.split(' ');
+                    const lines = [];
+                    let currentLine = words[0];
+
+                    for (let i = 1; i < words.length; i++) {
+                        const testLine = currentLine + ' ' + words[i];
+                        const metrics = ctx.measureText(testLine);
+                        if (metrics.width > maxWidth) {
+                            lines.push(currentLine);
+                            currentLine = words[i];
+                        } else {
+                            currentLine = testLine;
+                        }
+                    }
+                    lines.push(currentLine);
+                    return lines;
+                }
+
+                // Horizontal clues
+                currentCrossword.across.forEach(word => {
+                    const clueText = `${word.number}. ${word.clue}`;
+                    const lines = wrapText(clueText, columnWidth - 20);
+                    
+                    if (acrossY + lines.length * lineHeight < height - margin) {
+                        lines.forEach(line => {
+                            ctx.fillText(line, margin, acrossY);
+                            acrossY += lineHeight;
+                        });
+                    }
+                });
+
+                // Vertical clues
+                currentCrossword.down.forEach(word => {
+                    const clueText = `${word.number}. ${word.clue}`;
+                    const lines = wrapText(clueText, columnWidth - 20);
+                    
+                    if (downY + lines.length * lineHeight < height - margin) {
+                        lines.forEach(line => {
+                            ctx.fillText(line, margin + columnWidth + 60, downY);
+                            downY += lineHeight;
+                        });
+                    }
+                });
+
+                // Convert to PNG and download
+                canvas.toBlob(function(blob) {
+                    const url = URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = `${currentCrossword.title}.png`;
+                    document.body.appendChild(a);
+                    a.click();
+                    document.body.removeChild(a);
+                    URL.revokeObjectURL(url);
+                    
+                    showMessage(`✅ PNG téléchargé: ${currentCrossword.title}.png`, "success");
+                }, 'image/png');
+
+            } catch (error) {
+                showMessage("Erreur lors de la création du PNG: " + error.message);
+                console.error(error);
+            }
         }
     </script>
 </body>
