@@ -760,12 +760,12 @@ VENT Il souffle plus fort en automne et fait danser les feuilles`;
                 const rows = grid.length;
                 const cols = grid[0].length;
                 
-                // Fixed space for clues at bottom (50mm)
-                const cluesHeight = 50;
+                // Fixed space for clues at VERY BOTTOM (45mm)
+                const cluesHeight = 45;
                 
                 // MAXIMIZE grid space - use almost all available space
                 const availableWidth = pageWidth - 2 * margin;
-                const maxGridHeight = pageHeight - margin - 28 - cluesHeight - 8; // ~170mm for grid!
+                const maxGridHeight = pageHeight - margin - 28 - cluesHeight - 5; // ~175mm for grid!
                 
                 const cellSizeByWidth = availableWidth / cols;
                 const cellSizeByHeight = maxGridHeight / rows;
@@ -794,41 +794,41 @@ VENT Il souffle plus fort en automne et fait danser les feuilles`;
                             doc.setDrawColor(80, 80, 80);
                             doc.rect(x, y, cellSize, cellSize, 'FD');
                             
-                            // Number
-                            if (cell.number) {
-                                doc.setFontSize(cellSize * 1.5);
+                            // Number (only if NOT showing answers)
+                            if (cell.number && !withAnswers) {
+                                doc.setFontSize(cellSize * 1.3); // Reduced from 1.5
                                 doc.setFont(undefined, 'bold');
                                 doc.setTextColor(102, 126, 234);
-                                doc.text(cell.number.toString(), x + cellSize * 0.15, y + cellSize * 0.4);
+                                doc.text(cell.number.toString(), x + cellSize * 0.18, y + cellSize * 0.42); // More spacing from edge
                             }
 
                             // Letter (if with answers)
                             if (withAnswers && cell.letter) {
-                                doc.setFontSize(cellSize * 2.8);
+                                doc.setFontSize(cellSize * 2.5); // Reduced from 2.8 for better centering
                                 doc.setFont(undefined, 'bold');
                                 doc.setTextColor(0, 0, 0);
-                                doc.text(cell.letter, x + cellSize / 2, y + cellSize * 0.68, { align: 'center' });
+                                doc.text(cell.letter, x + cellSize / 2, y + cellSize * 0.65, { align: 'center' }); // Better vertical centering
                             }
                         }
                     }
                 }
 
-                // Clues at BOTTOM of page - compact
-                const cluesY = pageHeight - cluesHeight - margin + 3;
+                // Clues at VERY BOTTOM of page - compact
+                const cluesY = pageHeight - cluesHeight - margin + 2;
                 const columnWidth = (pageWidth - 2 * margin - 5) / 2;
 
                 doc.setTextColor(0, 0, 0);
-                doc.setFontSize(10);
+                doc.setFontSize(9.5); // Slightly reduced
                 doc.setFont(undefined, 'bold');
                 doc.text('Horizontal', margin, cluesY);
                 doc.text('Vertical', margin + columnWidth + 5, cluesY);
 
-                doc.setFontSize(7.5);
+                doc.setFontSize(7.2); // Slightly reduced
                 doc.setFont(undefined, 'normal');
 
-                let acrossY = cluesY + 5;
-                let downY = cluesY + 5;
-                const lineHeight = 4.2; // Increased to 1.5x line spacing
+                let acrossY = cluesY + 4.5;
+                let downY = cluesY + 4.5;
+                const lineHeight = 4.0; // Slightly reduced to fit better at bottom
                 const maxClueWidth = columnWidth - 2;
 
                 // Horizontal clues
@@ -902,16 +902,16 @@ VENT Il souffle plus fort en automne et fait danser les feuilles`;
                 const rows = grid.length;
                 const cols = grid[0].length;
 
-                // Fixed space for clues at bottom (750px - more compact)
-                const cluesHeight = 750;
+                // Compact space for clues at VERY BOTTOM (650px)
+                const cluesHeight = 650;
                 
-                // MAXIMIZE grid space (up to 2000px!)
+                // MAXIMIZE grid space even more!
                 const availableWidth = width - 2 * margin;
-                const maxGridHeight = height - margin - 200 - cluesHeight - 100; // ~2050px for grid!
+                const maxGridHeight = height - margin - 200 - cluesHeight - 50; // ~2200px for grid!
                 
                 const cellSizeByWidth = availableWidth / cols;
                 const cellSizeByHeight = maxGridHeight / rows;
-                const cellSize = Math.min(cellSizeByWidth, cellSizeByHeight, 150); // Increased from 120 to 150!
+                const cellSize = Math.min(cellSizeByWidth, cellSizeByHeight, 150);
                 
                 const gridWidth = cellSize * cols;
                 const gridHeight = cellSize * rows;
@@ -943,22 +943,22 @@ VENT Il souffle plus fort en automne et fait danser les feuilles`;
                     }
                 }
 
-                // Draw clues at BOTTOM of page
-                const cluesY = height - cluesHeight - margin + 50;
+                // Draw clues at VERY BOTTOM of page
+                const cluesY = height - cluesHeight - margin + 20; // Closer to bottom
                 const columnWidth = (width - 2 * margin - 60) / 2;
 
                 // Titles
                 ctx.fillStyle = '#000000';
-                ctx.font = 'bold 48px Arial';
+                ctx.font = 'bold 44px Arial'; // Slightly reduced
                 ctx.textAlign = 'left';
                 ctx.fillText('Horizontal', margin, cluesY);
                 ctx.fillText('Vertical', margin + columnWidth + 60, cluesY);
 
                 // Clues text
-                ctx.font = '32px Arial';
-                let acrossY = cluesY + 50;
-                let downY = cluesY + 50;
-                const lineHeight = 48; // Increased to 1.5x line spacing
+                ctx.font = '30px Arial'; // Slightly reduced
+                let acrossY = cluesY + 45;
+                let downY = cluesY + 45;
+                const lineHeight = 44; // Slightly reduced for compactness
 
                 // Helper function to wrap text
                 function wrapText(text, maxWidth) {
