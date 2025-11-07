@@ -884,7 +884,7 @@ VENT Il souffle plus fort en automne et fait danser les feuilles`;
                                 doc.setFontSize(cellSize * 2.5);
                                 doc.setFont(undefined, 'bold');
                                 doc.setTextColor(0, 0, 0);
-                                doc.text(cell.letter, x + cellSize / 2, y + cellSize * 0.65, { align: 'center' });
+                                doc.text(cell.letter, x + cellSize / 2, y + cellSize * 0.70, { align: 'center' }); // Meilleur centrage vertical
                             }
                         }
                     }
@@ -895,17 +895,17 @@ VENT Il souffle plus fort en automne et fait danser les feuilles`;
                 const columnWidth = (pageWidth - 2 * margin - 5) / 2;
 
                 doc.setTextColor(0, 0, 0);
-                doc.setFontSize(9.5);
+                doc.setFontSize(10); // Police plus grosse pour les titres
                 doc.setFont(undefined, 'bold');
                 doc.text('Horizontal', margin, cluesY);
                 doc.text('Vertical', margin + columnWidth + 5, cluesY);
 
-                doc.setFontSize(7.2);
+                doc.setFontSize(8.5); // Police plus grosse pour les indices
                 doc.setFont(undefined, 'normal');
 
-                let acrossY = cluesY + 4.5;
-                let downY = cluesY + 4.5;
-                const lineHeight = 4.0;
+                let acrossY = cluesY + 5;
+                let downY = cluesY + 5;
+                const lineHeight = 4.6; // Ajusté pour la police plus grosse
                 const maxClueWidth = columnWidth - 2;
 
                 // Indices horizontaux
@@ -978,9 +978,9 @@ VENT Il souffle plus fort en automne et fait danser les feuilles`;
                 const rows = grid.length;
                 const cols = grid[0].length;
 
-                const cluesHeight = 650;
+                const cluesHeight = 580;
                 const availableWidth = width - 2 * margin;
-                const maxGridHeight = height - margin - 200 - cluesHeight - 50;
+                const maxGridHeight = height - margin - 200 - cluesHeight - 20;
                 
                 const cellSizeByWidth = availableWidth / cols;
                 const cellSizeByHeight = maxGridHeight / rows;
@@ -1014,8 +1014,8 @@ VENT Il souffle plus fort en automne et fait danser les feuilles`;
                     }
                 }
 
-                // Dessiner les indices
-                const cluesY = height - cluesHeight - margin + 20;
+                // Dessiner les indices TOUT EN BAS
+                const cluesY = height - cluesHeight - margin + 50; // Plus près du bas
                 const columnWidth = (width - 2 * margin - 60) / 2;
 
                 ctx.fillStyle = '#000000';
