@@ -155,6 +155,7 @@
             display: flex;
             justify-content: center;
             margin-bottom: 30px;
+            overflow-x: auto;
         }
 
         .crossword-grid {
@@ -165,8 +166,8 @@
         }
 
         .cell {
-            width: 30px;
-            height: 30px;
+            width: 35px;
+            height: 35px;
             border: 1px solid #999;
             position: relative;
             background: white;
@@ -174,7 +175,7 @@
             align-items: center;
             justify-content: center;
             font-weight: bold;
-            font-size: 14px;
+            font-size: 16px;
         }
 
         .cell.black {
@@ -184,9 +185,9 @@
 
         .cell-number {
             position: absolute;
-            top: 1px;
-            left: 2px;
-            font-size: 8px;
+            top: 2px;
+            left: 3px;
+            font-size: 9px;
             font-weight: bold;
             color: #667eea;
         }
@@ -310,21 +311,21 @@
         let currentCrossword = null;
 
         function loadExample() {
-            const exampleText = `OCTOBRE Mois où on célèbre l'Halloween et où les feuilles tombent le plus
+            const exampleText = `CHRYSANTHÈME Fleur aux nombreux pétales qui fleurit en automne
+CHAMPIGNON Il pousse dans les forêts humides après la pluie
+FEUILLAGE Ensemble des feuilles d'un arbre qui change de couleur
+BERNACHE Oie sauvage du Canada qui vole en formation en V
+ORANGÉ Couleur chaude qu'on voit partout dans la nature automnale
+MAÏS Céréale jaune qu'on mange en épi lors des fêtes d'automne
 CITROUILLE Ce cucurbitacée orange devient une lanterne terrifiante
-RÉCOLTE Action de ramasser les fruits et légumes mûrs dans les champs
 MIGRATION Long voyage que font les oies vers le sud quand il fait froid
 ÉQUINOXE Jour où la nuit et le jour ont exactement la même durée
-ÉRABLE Arbre emblème du Canada dont la sève devient du sirop
-MAÏS Céréale jaune qu'on mange en épi lors des fêtes d'automne
-VENT Il souffle plus fort en automne et fait danser les feuilles
-FEUILLAGE Ensemble des feuilles d'un arbre qui change de couleur
-ORANGÉ Couleur chaude qu'on voit partout dans la nature automnale
-CHRYSANTHÈME Fleur aux nombreux pétales qui fleurit en automne
-BERNACHE Oie sauvage du Canada qui vole en formation en V
-VERGER Endroit où poussent les pommiers et où on cueille des fruits
 ÉCUREUIL Petit rongeur roux qui amasse des provisions pour l'hiver
-CHAMPIGNON Il pousse dans les forêts humides après la pluie`;
+OCTOBRE Mois où on célèbre l'Halloween et où les feuilles tombent le plus
+RÉCOLTE Action de ramasser les fruits et légumes mûrs dans les champs
+ÉRABLE Arbre emblème du Canada dont la sève devient du sirop
+VERGER Endroit où poussent les pommiers et où on cueille des fruits
+VENT Il souffle plus fort en automne et fait danser les feuilles`;
             
             document.getElementById('words').value = exampleText;
             document.getElementById('title').value = "L'automne";
@@ -364,7 +365,7 @@ CHAMPIGNON Il pousse dans les forêts humides après la pluie`;
             constructor(words) {
                 this.words = words.sort((a, b) => b.word.length - a.word.length);
                 this.grid = [];
-                this.gridSize = 25;
+                this.gridSize = 50;
                 this.placedWords = [];
             }
 
@@ -373,36 +374,37 @@ CHAMPIGNON Il pousse dans les forêts humides après la pluie`;
                 
                 if (this.words.length === 0) return null;
                 
-                // Place first word horizontally in the middle
+                // Place first word horizontally in center
                 const firstWord = this.words[0];
                 const startRow = Math.floor(this.gridSize / 2);
                 const startCol = Math.floor((this.gridSize - firstWord.word.length) / 2);
                 
-                this.placeWord(firstWord, startRow, startCol, true, 1);
+                this.placeWord(firstWord, startRow, startCol, true);
                 
                 // Try to place remaining words
                 for (let i = 1; i < this.words.length; i++) {
-                    this.placeWordWithIntersection(this.words[i], i + 1);
+                    this.findAndPlaceWord(this.words[i]);
                 }
                 
-                // Trim grid to actual used size
+                // Trim grid and renumber
                 this.trimGrid();
+                this.renumberWords();
                 
                 return {
                     grid: this.grid,
                     words: this.placedWords,
-                    across: this.placedWords.filter(w => w.horizontal),
-                    down: this.placedWords.filter(w => !w.horizontal)
+                    across: this.placedWords.filter(w => w.horizontal).sort((a, b) => a.number - b.number),
+                    down: this.placedWords.filter(w => !w.horizontal).sort((a, b) => a.number - b.number)
                 };
             }
 
             initGrid() {
                 this.grid = Array(this.gridSize).fill(null).map(() => 
-                    Array(this.gridSize).fill(null)
+                    Array(this.gridSize).fill(null).map(() => ({ letter: null, number: null }))
                 );
             }
 
-            placeWord(wordObj, row, col, horizontal, number) {
+            placeWord(wordObj, row, col, horizontal) {
                 const word = wordObj.word;
                 const placement = {
                     word: wordObj.originalWord,
@@ -410,21 +412,16 @@ CHAMPIGNON Il pousse dans les forêts humides après la pluie`;
                     row: row,
                     col: col,
                     horizontal: horizontal,
-                    number: number,
+                    number: 0, // Will be renumbered later
                     length: word.length
                 };
 
                 for (let i = 0; i < word.length; i++) {
-                    if (horizontal) {
-                        this.grid[row][col + i] = {
-                            letter: word[i],
-                            number: i === 0 ? number : null
-                        };
-                    } else {
-                        this.grid[row + i][col] = {
-                            letter: word[i],
-                            number: i === 0 ? number : null
-                        };
+                    const r = horizontal ? row : row + i;
+                    const c = horizontal ? col + i : col;
+                    
+                    if (this.grid[r][c].letter === null) {
+                        this.grid[r][c].letter = word[i];
                     }
                 }
 
@@ -432,90 +429,116 @@ CHAMPIGNON Il pousse dans les forêts humides après la pluie`;
                 return true;
             }
 
-            placeWordWithIntersection(wordObj, number) {
+            findAndPlaceWord(wordObj) {
                 const word = wordObj.word;
-                let placed = false;
+                const possiblePlacements = [];
 
-                // Try to find intersections with already placed words
-                for (let placed of this.placedWords) {
-                    for (let i = 0; i < word.length && !placed; i++) {
-                        for (let j = 0; j < placed.length && !placed; j++) {
-                            const placedWord = placed.word.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
-                            
-                            if (word[i] === placedWord[j]) {
-                                // Found matching letter, try to place
+                // Find all possible intersections with placed words
+                for (let placedWord of this.placedWords) {
+                    const placedWordStr = placedWord.word.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+                    
+                    // Check each letter in new word against placed word
+                    for (let i = 0; i < word.length; i++) {
+                        for (let j = 0; j < placedWordStr.length; j++) {
+                            if (word[i] === placedWordStr[j]) {
+                                // Found matching letter
                                 let newRow, newCol, horizontal;
 
-                                if (placed.horizontal) {
-                                    // Place vertically
+                                if (placedWord.horizontal) {
+                                    // Place new word vertically
                                     horizontal = false;
-                                    newRow = placed.row - i;
-                                    newCol = placed.col + j;
+                                    newRow = placedWord.row - i;
+                                    newCol = placedWord.col + j;
                                 } else {
-                                    // Place horizontally
+                                    // Place new word horizontally
                                     horizontal = true;
-                                    newRow = placed.row + j;
-                                    newCol = placed.col - i;
+                                    newRow = placedWord.row + j;
+                                    newCol = placedWord.col - i;
                                 }
 
                                 if (this.canPlaceWord(word, newRow, newCol, horizontal)) {
-                                    this.placeWord(wordObj, newRow, newCol, horizontal, number);
-                                    placed = true;
-                                    break;
+                                    possiblePlacements.push({
+                                        row: newRow,
+                                        col: newCol,
+                                        horizontal: horizontal,
+                                        score: this.scorePosition(word, newRow, newCol, horizontal)
+                                    });
                                 }
                             }
                         }
                     }
-                    if (placed) break;
                 }
 
-                // If no intersection found, try to place randomly
-                if (!placed) {
-                    for (let attempt = 0; attempt < 100; attempt++) {
-                        const horizontal = Math.random() > 0.5;
-                        const maxRow = horizontal ? this.gridSize : this.gridSize - word.length;
-                        const maxCol = horizontal ? this.gridSize - word.length : this.gridSize;
-                        
-                        const row = Math.floor(Math.random() * maxRow);
-                        const col = Math.floor(Math.random() * maxCol);
-
-                        if (this.canPlaceWord(word, row, col, horizontal)) {
-                            this.placeWord(wordObj, row, col, horizontal, number);
-                            placed = true;
-                            break;
-                        }
-                    }
+                // Sort by score and place best position
+                if (possiblePlacements.length > 0) {
+                    possiblePlacements.sort((a, b) => b.score - a.score);
+                    const best = possiblePlacements[0];
+                    this.placeWord(wordObj, best.row, best.col, best.horizontal);
+                    return true;
                 }
 
-                return placed;
+                return false;
             }
 
             canPlaceWord(word, row, col, horizontal) {
-                if (row < 0 || col < 0) return false;
+                if (row < 1 || col < 1) return false;
                 
+                const endRow = horizontal ? row : row + word.length - 1;
+                const endCol = horizontal ? col + word.length - 1 : col;
+                
+                if (endRow >= this.gridSize - 1 || endCol >= this.gridSize - 1) return false;
+
+                // Check if word fits and doesn't conflict
                 for (let i = 0; i < word.length; i++) {
                     const r = horizontal ? row : row + i;
                     const c = horizontal ? col + i : col;
 
-                    if (r >= this.gridSize || c >= this.gridSize) return false;
-
-                    const cell = this.grid[r][c];
+                    const cell = this.grid[r][c].letter;
                     
-                    if (cell !== null && cell.letter !== word[i]) {
+                    // If cell is occupied, it must match
+                    if (cell !== null && cell !== word[i]) {
                         return false;
                     }
 
-                    // Check adjacent cells
-                    if (horizontal) {
-                        if (r > 0 && this.grid[r - 1][c] !== null && this.grid[r - 1][c].letter !== word[i]) return false;
-                        if (r < this.gridSize - 1 && this.grid[r + 1][c] !== null && this.grid[r + 1][c].letter !== word[i]) return false;
-                    } else {
-                        if (c > 0 && this.grid[r][c - 1] !== null && this.grid[r][c - 1].letter !== word[i]) return false;
-                        if (c < this.gridSize - 1 && this.grid[r][c + 1] !== null && this.grid[r][c + 1].letter !== word[i]) return false;
+                    // Check perpendicular cells
+                    if (cell === null) {
+                        if (horizontal) {
+                            // Check above and below
+                            if (this.grid[r - 1][c].letter !== null) return false;
+                            if (this.grid[r + 1][c].letter !== null) return false;
+                            
+                            // Check start and end don't touch other words
+                            if (i === 0 && c > 0 && this.grid[r][c - 1].letter !== null) return false;
+                            if (i === word.length - 1 && c < this.gridSize - 1 && this.grid[r][c + 1].letter !== null) return false;
+                        } else {
+                            // Check left and right
+                            if (this.grid[r][c - 1].letter !== null) return false;
+                            if (this.grid[r][c + 1].letter !== null) return false;
+                            
+                            // Check start and end don't touch other words
+                            if (i === 0 && r > 0 && this.grid[r - 1][c].letter !== null) return false;
+                            if (i === word.length - 1 && r < this.gridSize - 1 && this.grid[r + 1][c].letter !== null) return false;
+                        }
                     }
                 }
 
                 return true;
+            }
+
+            scorePosition(word, row, col, horizontal) {
+                let score = 0;
+                
+                // Count intersections
+                for (let i = 0; i < word.length; i++) {
+                    const r = horizontal ? row : row + i;
+                    const c = horizontal ? col + i : col;
+                    
+                    if (this.grid[r][c].letter === word[i]) {
+                        score += 10; // Reward intersections
+                    }
+                }
+                
+                return score;
             }
 
             trimGrid() {
@@ -524,7 +547,7 @@ CHAMPIGNON Il pousse dans les forêts humides après la pluie`;
 
                 for (let i = 0; i < this.gridSize; i++) {
                     for (let j = 0; j < this.gridSize; j++) {
-                        if (this.grid[i][j] !== null) {
+                        if (this.grid[i][j].letter !== null) {
                             minRow = Math.min(minRow, i);
                             maxRow = Math.max(maxRow, i);
                             minCol = Math.min(minCol, j);
@@ -551,6 +574,44 @@ CHAMPIGNON Il pousse dans les forêts humides après la pluie`;
                 }
 
                 this.grid = newGrid;
+            }
+
+            renumberWords() {
+                // Create a list of all starting positions
+                const positions = [];
+                
+                for (let word of this.placedWords) {
+                    const key = `${word.row}-${word.col}`;
+                    const existing = positions.find(p => p.key === key);
+                    
+                    if (!existing) {
+                        positions.push({
+                            key: key,
+                            row: word.row,
+                            col: word.col,
+                            words: [word]
+                        });
+                    } else {
+                        existing.words.push(word);
+                    }
+                }
+
+                // Sort positions by row then column
+                positions.sort((a, b) => {
+                    if (a.row !== b.row) return a.row - b.row;
+                    return a.col - b.col;
+                });
+
+                // Assign numbers
+                for (let i = 0; i < positions.length; i++) {
+                    const pos = positions[i];
+                    for (let word of pos.words) {
+                        word.number = i + 1;
+                    }
+                    
+                    // Mark in grid
+                    this.grid[pos.row][pos.col].number = i + 1;
+                }
             }
         }
 
@@ -598,6 +659,7 @@ CHAMPIGNON Il pousse dans les forêts humides après la pluie`;
                     }
                 } catch (error) {
                     showMessage("Erreur lors de la génération: " + error.message);
+                    console.error(error);
                 }
             }, 100);
         }
@@ -612,15 +674,15 @@ CHAMPIGNON Il pousse dans les forêts humides après la pluie`;
 
             const gridDiv = document.createElement('div');
             gridDiv.className = 'crossword-grid';
-            gridDiv.style.gridTemplateColumns = `repeat(${crossword.grid[0].length}, 30px)`;
-            gridDiv.style.gridTemplateRows = `repeat(${crossword.grid.length}, 30px)`;
+            gridDiv.style.gridTemplateColumns = `repeat(${crossword.grid[0].length}, 35px)`;
+            gridDiv.style.gridTemplateRows = `repeat(${crossword.grid.length}, 35px)`;
 
             for (let row of crossword.grid) {
                 for (let cell of row) {
                     const cellDiv = document.createElement('div');
                     cellDiv.className = 'cell';
                     
-                    if (cell === null) {
+                    if (cell.letter === null) {
                         cellDiv.classList.add('black');
                     } else {
                         if (cell.number) {
@@ -683,65 +745,77 @@ CHAMPIGNON Il pousse dans les forêts humides après la pluie`;
                     format: 'letter'
                 });
 
-                const pageWidth = 215.9; // Letter width in mm
-                const pageHeight = 279.4; // Letter height in mm
-                const margin = 15;
+                const pageWidth = 215.9;
+                const pageHeight = 279.4;
+                const margin = 12;
 
                 // Title
-                doc.setFontSize(20);
+                doc.setFontSize(22);
                 doc.setFont(undefined, 'bold');
-                doc.text(currentCrossword.title, pageWidth / 2, margin + 5, { align: 'center' });
+                doc.text(currentCrossword.title, pageWidth / 2, margin + 8, { align: 'center' });
 
-                // Calculate grid dimensions
+                // Calculate optimal grid size
                 const grid = currentCrossword.grid;
-                const cellSize = Math.min(
-                    (pageWidth - 2 * margin) / grid[0].length,
-                    100 / grid.length
-                );
+                const rows = grid.length;
+                const cols = grid[0].length;
                 
-                const gridWidth = cellSize * grid[0].length;
-                const gridHeight = cellSize * grid.length;
+                // Aim for larger cells - calculate based on available space
+                const availableWidth = pageWidth - 2 * margin;
+                const availableGridHeight = 130; // Reserve space for clues
+                
+                const cellSizeByWidth = availableWidth / cols;
+                const cellSizeByHeight = availableGridHeight / rows;
+                const cellSize = Math.min(cellSizeByWidth, cellSizeByHeight, 8); // Max 8mm per cell
+                
+                const gridWidth = cellSize * cols;
+                const gridHeight = cellSize * rows;
                 const gridX = (pageWidth - gridWidth) / 2;
-                const gridY = margin + 15;
+                const gridY = margin + 18;
 
                 // Draw grid
-                doc.setLineWidth(0.3);
-                for (let i = 0; i < grid.length; i++) {
-                    for (let j = 0; j < grid[i].length; j++) {
+                doc.setLineWidth(0.2);
+                doc.setFontSize(cellSize * 1.8);
+                
+                for (let i = 0; i < rows; i++) {
+                    for (let j = 0; j < cols; j++) {
                         const x = gridX + j * cellSize;
                         const y = gridY + i * cellSize;
                         const cell = grid[i][j];
 
-                        if (cell === null) {
+                        if (cell.letter === null) {
                             // Black cell
                             doc.setFillColor(50, 50, 50);
                             doc.rect(x, y, cellSize, cellSize, 'F');
                         } else {
                             // White cell
+                            doc.setDrawColor(100, 100, 100);
                             doc.rect(x, y, cellSize, cellSize);
                             
                             // Number
                             if (cell.number) {
-                                doc.setFontSize(6);
+                                doc.setFontSize(cellSize * 1.3);
                                 doc.setFont(undefined, 'bold');
-                                doc.text(cell.number.toString(), x + 1, y + 2);
+                                doc.setTextColor(102, 126, 234);
+                                doc.text(cell.number.toString(), x + cellSize * 0.12, y + cellSize * 0.35);
                             }
 
                             // Letter (if with answers)
                             if (withAnswers && cell.letter) {
-                                doc.setFontSize(cellSize * 2);
+                                doc.setFontSize(cellSize * 2.2);
                                 doc.setFont(undefined, 'bold');
-                                doc.text(cell.letter, x + cellSize / 2, y + cellSize / 2 + 2, { align: 'center' });
+                                doc.setTextColor(0, 0, 0);
+                                doc.text(cell.letter, x + cellSize / 2, y + cellSize / 2 + cellSize * 0.2, { align: 'center' });
                             }
                         }
                     }
                 }
 
-                // Clues
-                const cluesY = gridY + gridHeight + 10;
+                // Clues section
+                const cluesY = gridY + gridHeight + 8;
                 const columnWidth = (pageWidth - 2 * margin - 5) / 2;
 
-                doc.setFontSize(12);
+                doc.setTextColor(0, 0, 0);
+                doc.setFontSize(13);
                 doc.setFont(undefined, 'bold');
                 doc.text('Horizontal', margin, cluesY);
                 doc.text('Vertical', margin + columnWidth + 5, cluesY);
@@ -749,22 +823,20 @@ CHAMPIGNON Il pousse dans les forêts humides après la pluie`;
                 doc.setFontSize(9);
                 doc.setFont(undefined, 'normal');
 
-                let acrossY = cluesY + 7;
-                let downY = cluesY + 7;
-                const lineHeight = 5;
-                const maxClueWidth = columnWidth - 5;
+                let acrossY = cluesY + 6;
+                let downY = cluesY + 6;
+                const lineHeight = 4.5;
+                const maxClueWidth = columnWidth - 2;
 
                 // Horizontal clues
                 currentCrossword.across.forEach(word => {
                     const clueText = `${word.number}. ${word.clue}`;
                     const lines = doc.splitTextToSize(clueText, maxClueWidth);
                     
-                    if (acrossY + lines.length * lineHeight > pageHeight - margin) {
-                        return; // Skip if no space
+                    if (acrossY + lines.length * lineHeight < pageHeight - margin) {
+                        doc.text(lines, margin, acrossY);
+                        acrossY += lines.length * lineHeight;
                     }
-                    
-                    doc.text(lines, margin, acrossY);
-                    acrossY += lines.length * lineHeight;
                 });
 
                 // Vertical clues
@@ -772,12 +844,10 @@ CHAMPIGNON Il pousse dans les forêts humides après la pluie`;
                     const clueText = `${word.number}. ${word.clue}`;
                     const lines = doc.splitTextToSize(clueText, maxClueWidth);
                     
-                    if (downY + lines.length * lineHeight > pageHeight - margin) {
-                        return; // Skip if no space
+                    if (downY + lines.length * lineHeight < pageHeight - margin) {
+                        doc.text(lines, margin + columnWidth + 5, downY);
+                        downY += lines.length * lineHeight;
                     }
-                    
-                    doc.text(lines, margin + columnWidth + 5, downY);
-                    downY += lines.length * lineHeight;
                 });
 
                 // Save
