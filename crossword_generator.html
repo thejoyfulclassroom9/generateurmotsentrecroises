@@ -56,7 +56,9 @@
         .logo {
             width: 60px;
             height: 60px;
-            object-fit: contain;
+            object-fit: cover;
+            border-radius: 50%;
+            border: 3px solid #000;
         }
 
         .branding-text {
@@ -407,7 +409,7 @@
         
         <div class="branding">
             <img src="logo.png" alt="The Joyful Classroom" class="logo">
-            <p class="branding-text">Offert gratuitement par The Joyful Classroom</p>
+            <p class="branding-text">Offert gratuitement par <strong>The Joyful Classroom</strong></p>
         </div>
 
         <div class="input-section">
@@ -1153,6 +1155,26 @@ VENT Il souffle plus fort en automne et fait danser les feuilles`;
                     }
                 }
 
+                // Ajouter les numéros à l'extérieur des cases pour le corrigé
+                if (withAnswers) {
+                    doc.setFontSize(cellSize * 1.2);
+                    doc.setFont(undefined, 'bold');
+                    doc.setTextColor(0, 0, 0);
+                    
+                    currentCrossword.words.forEach(word => {
+                        const x = gridX + word.col * cellSize;
+                        const y = gridY + word.row * cellSize;
+                        
+                        if (word.horizontal) {
+                            // Pour les mots horizontaux: numéro à gauche
+                            doc.text(word.number.toString(), x - cellSize * 0.6, y + cellSize * 0.65);
+                        } else {
+                            // Pour les mots verticaux: numéro en haut
+                            doc.text(word.number.toString(), x + cellSize * 0.3, y - cellSize * 0.15);
+                        }
+                    });
+                }
+
                 // Indices en bas de page
                 const cluesY = pageHeight - cluesHeight - margin + 2;
                 const columnWidth = (pageWidth - 2 * margin - 5) / 2;
@@ -1166,8 +1188,8 @@ VENT Il souffle plus fort en automne et fait danser les feuilles`;
                 doc.setFontSize(8.5); // Police plus grosse pour les indices
                 doc.setFont(selectedFont, 'normal');
 
-                let acrossY = cluesY + 5;
-                let downY = cluesY + 5;
+                let acrossY = cluesY + 7; // Plus d'espace après le titre
+                let downY = cluesY + 7; // Plus d'espace après le titre
                 const lineHeight = 4.6; // Ajusté pour la police plus grosse
                 const maxClueWidth = columnWidth - 2;
 
@@ -1297,8 +1319,8 @@ VENT Il souffle plus fort en automne et fait danser les feuilles`;
                 ctx.fillText('Vertical', margin + columnWidth + 60, cluesY);
 
                 ctx.font = `30px ${selectedFont}`;
-                let acrossY = cluesY + 45;
-                let downY = cluesY + 45;
+                let acrossY = cluesY + 55; // Plus d'espace après le titre
+                let downY = cluesY + 55; // Plus d'espace après le titre
                 const lineHeight = 44;
 
                 function wrapText(text, maxWidth) {
