@@ -49,7 +49,7 @@
             gap: 15px;
             margin-bottom: 30px;
             padding: 15px;
-            background: #f9f9f9;
+            background: #ffffff;
             border-radius: 10px;
         }
 
@@ -1185,12 +1185,12 @@ VENT Il souffle plus fort en automne et fait danser les feuilles`;
                 doc.text('Horizontal', margin, cluesY);
                 doc.text('Vertical', margin + columnWidth + 5, cluesY);
 
-                doc.setFontSize(8.5); // Police plus grosse pour les indices
+                doc.setFontSize(10.5); // Police plus grosse pour les indices
                 doc.setFont(selectedFont, 'normal');
 
                 let acrossY = cluesY + 7; // Plus d'espace après le titre
                 let downY = cluesY + 7; // Plus d'espace après le titre
-                const lineHeight = 4.6; // Ajusté pour la police plus grosse
+                const lineHeight = 5.4; // Ajusté pour la police plus grosse (10.5)
                 const maxClueWidth = columnWidth - 2;
 
                 // Indices horizontaux
@@ -1318,10 +1318,10 @@ VENT Il souffle plus fort en automne et fait danser les feuilles`;
                 ctx.fillText('Horizontal', margin, cluesY);
                 ctx.fillText('Vertical', margin + columnWidth + 60, cluesY);
 
-                ctx.font = `30px ${selectedFont}`;
+                ctx.font = `32px ${selectedFont}`;
                 let acrossY = cluesY + 55; // Plus d'espace après le titre
                 let downY = cluesY + 55; // Plus d'espace après le titre
-                const lineHeight = 44;
+                const lineHeight = 47; // Ajusté pour la police plus grosse (32px)
 
                 function wrapText(text, maxWidth) {
                     const words = text.split(' ');
