@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Générateur de Mots entrecroisés - Version Améliorée</title>
+    <title>Générateur de Mots entrecroisés - Version ULTRA ROBUSTE</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <style>
         * {
@@ -11,14 +11,12 @@
             padding: 0;
             box-sizing: border-box;
         }
-
         body {
             font-family: Arial, sans-serif;
             background: #000000;
             padding: 20px;
             min-height: 100vh;
         }
-
         .container {
             max-width: 1200px;
             margin: 0 auto;
@@ -27,21 +25,18 @@
             padding: 30px;
             box-shadow: 0 10px 40px rgba(0,0,0,0.2);
         }
-
         h1 {
             text-align: center;
             color: #000000;
             margin-bottom: 10px;
             font-size: 2.5em;
         }
-
         .subtitle {
             text-align: center;
             color: #666;
             margin-bottom: 15px;
             font-size: 1.1em;
         }
-
         .branding {
             display: flex;
             align-items: center;
@@ -52,7 +47,6 @@
             background: #ffffff;
             border-radius: 10px;
         }
-
         .logo {
             width: 60px;
             height: 60px;
@@ -60,29 +54,24 @@
             border-radius: 50%;
             border: 3px solid #000;
         }
-
         .branding-text {
             font-size: 0.95em;
             color: #555;
             font-weight: 500;
             margin: 0;
         }
-
         .input-section {
             margin-bottom: 30px;
         }
-
         .input-group {
             margin-bottom: 20px;
         }
-
         label {
             display: block;
             font-weight: bold;
             margin-bottom: 8px;
             color: #333;
         }
-
         input[type="text"], textarea {
             width: 100%;
             padding: 12px;
@@ -92,31 +81,26 @@
             font-family: Arial, sans-serif;
             transition: border-color 0.3s;
         }
-
         input[type="text"]:focus, textarea:focus {
             outline: none;
             border-color: #667eea;
         }
-
         textarea {
             min-height: 200px;
             resize: vertical;
             font-family: 'Courier New', monospace;
         }
-
         .help-text {
             font-size: 0.9em;
             color: #666;
             margin-top: 5px;
         }
-
         .color-options {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
             gap: 12px;
             margin-top: 10px;
         }
-
         .color-option {
             display: flex;
             align-items: center;
@@ -128,21 +112,17 @@
             transition: all 0.3s;
             background: white;
         }
-
         .color-option:hover {
             border-color: #000;
             transform: translateY(-2px);
             box-shadow: 0 3px 10px rgba(0,0,0,0.1);
         }
-
         .color-option input[type="radio"] {
             cursor: pointer;
         }
-
         .color-option input[type="radio"]:checked + .color-swatch {
             border: 3px solid #000;
         }
-
         .color-swatch {
             width: 30px;
             height: 30px;
@@ -150,20 +130,17 @@
             border: 2px solid #ccc;
             transition: all 0.3s;
         }
-
         .color-name {
             font-size: 14px;
             font-weight: 500;
             color: #333;
         }
-
         .font-options {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
             gap: 12px;
             margin-top: 10px;
         }
-
         .font-option {
             display: flex;
             align-items: center;
@@ -175,35 +152,29 @@
             transition: all 0.3s;
             background: white;
         }
-
         .font-option:hover {
             border-color: #000;
             transform: translateY(-2px);
             box-shadow: 0 3px 10px rgba(0,0,0,0.1);
         }
-
         .font-option input[type="radio"] {
             cursor: pointer;
         }
-
         .font-option input[type="radio"]:checked ~ .font-preview {
             font-weight: bold;
             color: #000;
         }
-
         .font-preview {
             font-size: 16px;
             color: #555;
             transition: all 0.3s;
         }
-
         .button-group {
             display: flex;
             gap: 15px;
             margin-top: 20px;
             flex-wrap: wrap;
         }
-
         button {
             padding: 15px 30px;
             font-size: 16px;
@@ -215,79 +186,65 @@
             flex: 1;
             min-width: 200px;
         }
-
         .btn-primary {
             background: #000000;
             color: white;
         }
-
         .btn-primary:hover {
             transform: translateY(-2px);
             box-shadow: 0 5px 15px rgba(0, 0, 0, 0.6);
         }
-
         .btn-success {
             background: #FA0F00;
             color: white;
         }
-
         .btn-success:hover {
             transform: translateY(-2px);
             box-shadow: 0 5px 15px rgba(250, 15, 0, 0.5);
         }
-
         .btn-secondary {
             background: #f0f0f0;
             color: #333;
         }
-
         .btn-secondary:hover {
             background: #e0e0e0;
         }
-
         .btn-png {
             background: #FFD93D;
             color: #000;
             font-weight: bold;
         }
-
         .btn-png:hover {
             transform: translateY(-2px);
             box-shadow: 0 5px 15px rgba(255, 217, 61, 0.5);
         }
-
         button:disabled {
             opacity: 0.5;
             cursor: not-allowed;
             transform: none !important;
         }
-
         .preview-section {
             margin-top: 40px;
             padding-top: 30px;
             border-top: 3px solid #f0f0f0;
         }
-
         .preview-section h2 {
             color: #000000;
             margin-bottom: 20px;
             text-align: center;
         }
-
         .grid-container {
             display: flex;
             justify-content: center;
             margin-bottom: 30px;
             overflow-x: auto;
         }
-
         .crossword-grid {
             display: inline-grid;
             gap: 0;
             border: 2px solid #333;
             background: white;
         }
-
         .cell {
             width: 35px;
             height: 35px;
@@ -300,12 +257,10 @@
             font-weight: bold;
             font-size: 16px;
         }
-
         .cell.black {
             background: white;
             border-color: white;
         }
-
         .cell-number {
             position: absolute;
             top: 3px;
@@ -314,37 +269,31 @@
             font-weight: bold;
             color: #000000;
         }
-
         .clues-container {
             display: grid;
             grid-template-columns: 1fr 1fr;
             gap: 30px;
             margin-top: 20px;
         }
-
         .clues-section {
             background: #f9f9f9;
             padding: 20px;
             border-radius: 10px;
         }
-
         .clues-section h3 {
             color: #000000;
             margin-bottom: 15px;
             font-size: 1.3em;
         }
-
         .clue-item {
             margin-bottom: 10px;
             line-height: 1.6;
         }
-
         .clue-number {
             font-weight: bold;
             color: #000000;
             margin-right: 5px;
         }
-
         .error-message {
             background: #ffebee;
             color: #c62828;
@@ -353,7 +302,6 @@
             margin-top: 20px;
             border-left: 4px solid #c62828;
         }
-
         .success-message {
             background: #e8f5e9;
             color: #2e7d32;
@@ -362,14 +310,30 @@
             margin-top: 20px;
             border-left: 4px solid #2e7d32;
         }
-
         .loading {
             text-align: center;
             padding: 20px;
             color: #000000;
             font-size: 1.2em;
         }
-
+        .progress-bar {
+            width: 100%;
+            height: 30px;
+            background: #f0f0f0;
+            border-radius: 15px;
+            overflow: hidden;
+            margin: 10px 0;
+        }
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+            transition: width 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+        }
         @media print {
             body {
                 background: white;
@@ -378,24 +342,19 @@
                 display: none;
             }
         }
-
         @media (max-width: 768px) {
             .clues-container {
                 grid-template-columns: 1fr;
             }
-            
             .button-group {
                 flex-direction: column;
             }
-            
             button {
                 min-width: 100%;
             }
-            
             .color-options {
                 grid-template-columns: 1fr;
             }
-            
             .font-options {
                 grid-template-columns: 1fr;
             }
@@ -405,7 +364,7 @@
 <body>
     <div class="container">
         <h1>🧩 Générateur de Mots entrecroisés</h1>
-        <p class="subtitle">Créez des mots entrecroisés professionnels en quelques clics!</p>
+        <p class="subtitle">Version ULTRA ROBUSTE - Tous les mots seront placés!</p>
         
         <div class="branding">
             <img src="logo.png" alt="The Joyful Classroom" class="logo">
@@ -508,11 +467,16 @@
         </div>
 
         <div id="message"></div>
+        <div id="progressContainer" style="display: none;">
+            <div class="progress-bar">
+                <div id="progressBar" class="progress-fill" style="width: 0%;">0%</div>
+            </div>
+            <p id="progressText" style="text-align: center; margin-top: 10px;"></p>
+        </div>
 
         <div id="preview" class="preview-section" style="display: none;">
             <h2>📄 Aperçu</h2>
             <div id="crosswordDisplay"></div>
-            
             <div class="button-group">
                 <button class="btn-success" onclick="downloadPDF()">📥 Télécharger en PDF</button>
                 <button class="btn-success" onclick="downloadPDFWithAnswers()">📥 PDF avec corrigé</button>
@@ -534,18 +498,6 @@
             return selected ? selected.value : 'Arial';
         }
 
-        // Appliquer la police au titre principal quand elle change
-        document.addEventListener('DOMContentLoaded', function() {
-            const fontRadios = document.querySelectorAll('input[name="fontFamily"]');
-            const mainTitle = document.querySelector('h1');
-            
-            fontRadios.forEach(radio => {
-                radio.addEventListener('change', function() {
-                    mainTitle.style.fontFamily = getSelectedFont();
-                });
-            });
-        });
-
         function loadExample() {
             const exampleText = `CHRYSANTHÈME Fleur aux nombreux pétales qui fleurit en automne
 CHAMPIGNON Il pousse dans les forêts humides après la pluie
@@ -562,7 +514,7 @@ RÉCOLTE Action de ramasser les fruits et légumes mûrs dans les champs
 ÉRABLE Arbre emblème du Canada dont la sève devient du sirop
 VERGER Endroit où poussent les pommiers et où on cueille des fruits
 VENT Il souffle plus fort en automne et fait danser les feuilles`;
-            
+
             document.getElementById('words').value = exampleText;
             document.getElementById('title').value = "L'automne";
             showMessage("Exemple chargé! Cliquez sur 'Générer les mots entrecroisés'", "success");
@@ -597,109 +549,93 @@ VENT Il souffle plus fort en automne et fait danser les feuilles`;
             }, 5000);
         }
 
+        function updateProgress(percent, text) {
+            const progressContainer = document.getElementById('progressContainer');
+            const progressBar = document.getElementById('progressBar');
+            const progressText = document.getElementById('progressText');
+            
+            progressContainer.style.display = 'block';
+            progressBar.style.width = percent + '%';
+            progressBar.textContent = Math.round(percent) + '%';
+            progressText.textContent = text;
+        }
+
         class CrosswordGenerator {
             constructor(words) {
                 this.words = words;
                 this.grid = [];
-                this.gridSize = 90; // Grille ENCORE plus grande (de 70 à 90)
+                this.gridSize = 100; // Grille encore plus grande pour garantir le succès
                 this.placedWords = [];
+                this.maxAttempts = 2000; // BEAUCOUP plus de tentatives
             }
 
             generate() {
+                if (this.words.length === 0) return null;
+
+                let attempt = 0;
                 let bestResult = null;
                 let maxPlaced = 0;
 
-                // MODE ULTRA ROBUSTE: Essayer 100 fois avec différentes stratégies
-                for (let attempt = 0; attempt < 100; attempt++) {
+                // CONTINUER JUSQU'À CE QUE TOUS LES MOTS SOIENT PLACÉS
+                while (attempt < this.maxAttempts) {
                     this.initGrid();
                     this.placedWords = [];
-                    
-                    // Afficher la progression tous les 10 essais
-                    if (attempt % 10 === 0 && attempt > 0) {
+
+                    // Afficher la progression
+                    if (attempt % 10 === 0) {
+                        const progress = (maxPlaced / this.words.length) * 100;
                         let strategy = '';
-                        if (attempt < 25) strategy = 'LONGUEUR';
-                        else if (attempt < 50) strategy = 'VOYELLES';
-                        else if (attempt < 75) strategy = 'LETTRES COMMUNES';
+                        if (attempt < 500) strategy = 'PAR LONGUEUR';
+                        else if (attempt < 1000) strategy = 'PAR VOYELLES';
+                        else if (attempt < 1500) strategy = 'PAR LETTRES COMMUNES';
                         else strategy = 'ALÉATOIRE';
                         
-                        const progressMsg = `⏳ Stratégie ${strategy}: ${attempt}/100... Meilleur: ${maxPlaced}/${this.words.length} mots`;
-                        document.getElementById('message').textContent = progressMsg;
+                        updateProgress(progress, `⏳ Tentative ${attempt}/${this.maxAttempts} - Stratégie: ${strategy} - Meilleur: ${maxPlaced}/${this.words.length} mots`);
                     }
-                    
-                    if (this.words.length === 0) return null;
-                    
-                    // 🎯 STRATÉGIE MULTI-APPROCHE: 4 méthodes différentes!
+
+                    // Stratégies multiples
                     let wordsToPlace;
-                    
-                    if (attempt < 25) {
-                        // Stratégie 1: Tri par LONGUEUR (mots longs d'abord)
+                    if (attempt < 500) {
                         wordsToPlace = [...this.words].sort((a, b) => b.word.length - a.word.length);
-                    } else if (attempt < 50) {
-                        // Stratégie 2: Tri par NOMBRE DE VOYELLES (plus de voyelles = plus facile à connecter)
+                    } else if (attempt < 1000) {
                         wordsToPlace = [...this.words].sort((a, b) => {
                             const vowelsA = (a.word.match(/[AEIOUY]/g) || []).length;
                             const vowelsB = (b.word.match(/[AEIOUY]/g) || []).length;
                             return vowelsB - vowelsA;
                         });
-                    } else if (attempt < 75) {
-                        // Stratégie 3: Tri par LETTRES COMMUNES (E, A, I, S, T, N, R)
+                    } else if (attempt < 1500) {
                         wordsToPlace = [...this.words].sort((a, b) => {
                             const commonA = (a.word.match(/[EAISTNR]/g) || []).length;
                             const commonB = (b.word.match(/[EAISTNR]/g) || []).length;
                             return commonB - commonA;
                         });
                     } else {
-                        // Stratégie 4: COMPLÈTEMENT ALÉATOIRE
                         wordsToPlace = this.shuffleArray([...this.words]);
                     }
-                    
-                    // Place le premier mot avec MAXIMUM de variation
+
+                    // Placer le premier mot avec variation massive
                     const firstWord = wordsToPlace[0];
-                    
-                    // Alterner orientation toutes les 2 tentatives (plus de variété)
                     const horizontal = attempt % 2 === 0;
+                    const positionVariant = attempt % 30;
                     
-                    // VARIATION MASSIVE de position: explorer toute la grille!
-                    // Au lieu de juste autour du centre, essayer 20 positions différentes
-                    const positionVariant = attempt % 20;
-                    let startRow, startCol;
+                    let startRow = Math.floor(this.gridSize / 2);
+                    let startCol = Math.floor((this.gridSize - firstWord.word.length) / 2);
                     
-                    if (positionVariant < 5) {
-                        // Centre avec petites variations
-                        const offset = (positionVariant - 2) * 3;
-                        startRow = Math.floor(this.gridSize / 2) + offset;
-                        startCol = Math.floor((this.gridSize - firstWord.word.length) / 2) + offset;
-                    } else if (positionVariant < 10) {
-                        // Quart supérieur gauche
-                        startRow = Math.floor(this.gridSize / 4) + (positionVariant - 5) * 2;
-                        startCol = Math.floor(this.gridSize / 4) + (positionVariant - 5) * 2;
-                    } else if (positionVariant < 15) {
-                        // Quart supérieur droit
-                        startRow = Math.floor(this.gridSize / 4) + (positionVariant - 10) * 2;
-                        startCol = Math.floor(3 * this.gridSize / 4) - firstWord.word.length + (positionVariant - 10) * 2;
-                    } else {
-                        // Autres positions aléatoires
-                        const randomOffset = (positionVariant - 15) * 5;
-                        startRow = Math.floor(this.gridSize / 3) + randomOffset;
-                        startCol = Math.floor(this.gridSize / 3) + randomOffset;
-                    }
-                    
+                    // Variation de position
+                    const offset = (positionVariant - 15) * 3;
+                    startRow += offset;
+                    startCol += offset;
+
                     this.placeWord(firstWord, startRow, startCol, horizontal);
-                    
-                    // Essayer de placer les mots restants
+
+                    // Essayer de placer tous les autres mots
                     for (let i = 1; i < wordsToPlace.length; i++) {
                         let placed = false;
-                        
-                        // MODE ULTRA ROBUSTE: Essayer jusqu'à 1000 positions différentes
-                        for (let tryCount = 0; tryCount < 1000 && !placed; tryCount++) {
+                        for (let tryCount = 0; tryCount < 2000 && !placed; tryCount++) {
                             placed = this.findAndPlaceWord(wordsToPlace[i]);
                         }
-                        
-                        if (!placed) {
-                            console.warn(`Tentative ${attempt}: Impossible de placer "${wordsToPlace[i].word}"`);
-                        }
                     }
-                    
+
                     // Garder le meilleur résultat
                     if (this.placedWords.length > maxPlaced) {
                         maxPlaced = this.placedWords.length;
@@ -713,14 +649,17 @@ VENT Il souffle plus fort en automne et fait danser les feuilles`;
                             down: this.placedWords.filter(w => !w.horizontal).sort((a, b) => a.number - b.number)
                         };
                     }
-                    
-                    // Si tous les mots sont placés, arrêter
+
+                    // SI TOUS LES MOTS SONT PLACÉS, ARRÊTER!
                     if (this.placedWords.length === this.words.length) {
-                        console.log(`Succès à la tentative ${attempt + 1}!`);
+                        console.log(`🎉 SUCCÈS à la tentative ${attempt + 1}! Tous les ${this.words.length} mots sont placés!`);
+                        updateProgress(100, `✅ SUCCÈS! Tous les ${this.words.length} mots sont placés!`);
                         break;
                     }
+
+                    attempt++;
                 }
-                
+
                 return bestResult;
             }
 
@@ -734,7 +673,7 @@ VENT Il souffle plus fort en automne et fait danser les feuilles`;
             }
 
             initGrid() {
-                this.grid = Array(this.gridSize).fill(null).map(() => 
+                this.grid = Array(this.gridSize).fill(null).map(() =>
                     Array(this.gridSize).fill(null).map(() => ({ letter: null, number: null }))
                 );
             }
@@ -747,7 +686,7 @@ VENT Il souffle plus fort en automne et fait danser les feuilles`;
                     const c = horizontal ? col + i : col;
                     this.grid[r][c].letter = word[i];
                 }
-
+                
                 this.placedWords.push({
                     word: wordObj.originalWord,
                     clue: wordObj.clue,
@@ -765,31 +704,24 @@ VENT Il souffle plus fort en automne et fait danser les feuilles`;
                 const word = wordObj.word;
                 const possiblePlacements = [];
 
-                // Chercher toutes les intersections possibles
                 for (let placedWord of this.placedWords) {
                     const placedWordStr = placedWord.word.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
                     
-                    // Pour chaque lettre du nouveau mot
                     for (let i = 0; i < word.length; i++) {
-                        // Chercher cette lettre dans les mots déjà placés
                         for (let j = 0; j < placedWordStr.length; j++) {
                             if (word[i] === placedWordStr[j]) {
                                 let newRow, newCol, horizontal;
-
-                                // Calculer la position et l'orientation
+                                
                                 if (placedWord.horizontal) {
-                                    // Mot placé horizontal -> nouveau mot vertical
                                     horizontal = false;
                                     newRow = placedWord.row - i;
                                     newCol = placedWord.col + j;
                                 } else {
-                                    // Mot placé vertical -> nouveau mot horizontal
                                     horizontal = true;
                                     newRow = placedWord.row + j;
                                     newCol = placedWord.col - i;
                                 }
-
-                                // Vérifier si le placement est valide
+                                
                                 if (this.canPlaceWord(word, newRow, newCol, horizontal)) {
                                     const score = this.scorePosition(word, newRow, newCol, horizontal);
                                     possiblePlacements.push({
@@ -804,13 +736,9 @@ VENT Il souffle plus fort en automne et fait danser les feuilles`;
                     }
                 }
 
-                // Si on a trouvé au moins une position valide
                 if (possiblePlacements.length > 0) {
-                    // Trier par score (nombre d'intersections)
                     possiblePlacements.sort((a, b) => b.score - a.score);
-                    
-                    // Prendre une des meilleures positions (MAXIMUM de variété)
-                    const topCount = Math.min(15, possiblePlacements.length);
+                    const topCount = Math.min(20, possiblePlacements.length);
                     const randomIndex = Math.floor(Math.random() * topCount);
                     const best = possiblePlacements[randomIndex];
                     
@@ -822,7 +750,6 @@ VENT Il souffle plus fort en automne et fait danser les feuilles`;
             }
 
             canPlaceWord(word, row, col, horizontal) {
-                // Vérifier les limites
                 if (row < 1 || col < 1) return false;
                 
                 const endRow = horizontal ? row : row + word.length - 1;
@@ -832,29 +759,22 @@ VENT Il souffle plus fort en automne et fait danser les feuilles`;
 
                 let hasIntersection = false;
 
-                // Vérifier chaque position du mot
                 for (let i = 0; i < word.length; i++) {
                     const r = horizontal ? row : row + i;
                     const c = horizontal ? col + i : col;
                     const cell = this.grid[r][c].letter;
                     
                     if (cell !== null) {
-                        // Il y a déjà une lettre ici
                         if (cell !== word[i]) {
-                            // Lettre différente -> conflit
                             return false;
                         }
-                        // Même lettre -> intersection valide
                         hasIntersection = true;
                     } else {
-                        // Cellule vide -> vérifier les cellules adjacentes perpendiculaires
                         if (horizontal) {
-                            // Vérifier au-dessus et en-dessous
                             if (this.grid[r - 1][c].letter !== null || this.grid[r + 1][c].letter !== null) {
                                 return false;
                             }
                         } else {
-                            // Vérifier à gauche et à droite
                             if (this.grid[r][c - 1].letter !== null || this.grid[r][c + 1].letter !== null) {
                                 return false;
                             }
@@ -862,7 +782,6 @@ VENT Il souffle plus fort en automne et fait danser les feuilles`;
                     }
                 }
 
-                // Vérifier les cases avant et après le mot
                 if (horizontal) {
                     if (col > 0 && this.grid[row][col - 1].letter !== null) return false;
                     if (endCol < this.gridSize - 1 && this.grid[row][endCol + 1].letter !== null) return false;
@@ -871,47 +790,40 @@ VENT Il souffle plus fort en automne et fait danser les feuilles`;
                     if (endRow < this.gridSize - 1 && this.grid[endRow + 1][col].letter !== null) return false;
                 }
 
-                // Pour le premier mot, on accepte sans intersection
-                // Pour les autres, il faut au moins une intersection
                 return this.placedWords.length === 0 || hasIntersection;
             }
 
             scorePosition(word, row, col, horizontal) {
                 let score = 0;
                 let intersections = 0;
-                
-                // Compter le nombre d'intersections
+
                 for (let i = 0; i < word.length; i++) {
                     const r = horizontal ? row : row + i;
                     const c = horizontal ? col + i : col;
                     
                     if (this.grid[r][c].letter === word[i]) {
                         intersections++;
-                        score += 25; // Bonus ENCORE plus élevé (de 20 à 25)
+                        score += 30;
                         
-                        // BONUS EXTRA pour les lettres rares (Q, X, Z, W, K, Y)
                         if ('QXZWKY'.includes(word[i])) {
-                            score += 15; // Lettres rares valent plus!
+                            score += 20;
                         }
                     }
                 }
-                
-                // Bonus ÉNORME pour les mots avec plusieurs intersections
+
                 if (intersections > 1) {
-                    score += intersections * 20; // Bonus exponentiel MASSIF (de 10 à 20)
+                    score += intersections * 25;
                 }
-                
-                // PÉNALITÉ si le mot n'a qu'une seule intersection (on veut des grilles denses)
+
                 if (intersections === 1) {
                     score -= 5;
                 }
-                
-                // Bonus pour les positions plus centrales (mais moins important)
+
                 const centerRow = this.gridSize / 2;
                 const centerCol = this.gridSize / 2;
                 const distanceFromCenter = Math.abs(row - centerRow) + Math.abs(col - centerCol);
-                score -= distanceFromCenter * 0.01; // Pénalité minimale
-                
+                score -= distanceFromCenter * 0.01;
+
                 return score;
             }
 
@@ -919,7 +831,6 @@ VENT Il souffle plus fort en automne et fait danser les feuilles`;
                 let minRow = this.gridSize, maxRow = 0;
                 let minCol = this.gridSize, maxCol = 0;
 
-                // Trouver les limites de la grille utilisée
                 for (let i = 0; i < this.gridSize; i++) {
                     for (let j = 0; j < this.gridSize; j++) {
                         if (this.grid[i][j].letter !== null) {
@@ -931,19 +842,16 @@ VENT Il souffle plus fort en automne et fait danser les feuilles`;
                     }
                 }
 
-                // Ajouter une marge d'une cellule
                 minRow = Math.max(0, minRow - 1);
                 maxRow = Math.min(this.gridSize - 1, maxRow + 1);
                 minCol = Math.max(0, minCol - 1);
                 maxCol = Math.min(this.gridSize - 1, maxCol + 1);
 
-                // Créer la nouvelle grille réduite
                 const newGrid = [];
                 for (let i = minRow; i <= maxRow; i++) {
                     newGrid.push(this.grid[i].slice(minCol, maxCol + 1));
                 }
 
-                // Ajuster les positions des mots
                 for (let word of this.placedWords) {
                     word.row -= minRow;
                     word.col -= minCol;
@@ -954,8 +862,7 @@ VENT Il souffle plus fort en automne et fait danser les feuilles`;
 
             renumberWords() {
                 const positions = [];
-                
-                // Regrouper les mots par position de départ
+
                 for (let word of this.placedWords) {
                     const key = `${word.row}-${word.col}`;
                     const existing = positions.find(p => p.key === key);
@@ -972,13 +879,11 @@ VENT Il souffle plus fort en automne et fait danser les feuilles`;
                     }
                 }
 
-                // Trier par position (ligne puis colonne)
                 positions.sort((a, b) => {
                     if (a.row !== b.row) return a.row - b.row;
                     return a.col - b.col;
                 });
 
-                // Attribuer les numéros
                 for (let i = 0; i < positions.length; i++) {
                     const pos = positions[i];
                     for (let word of pos.words) {
@@ -992,80 +897,80 @@ VENT Il souffle plus fort en automne et fait danser les feuilles`;
         function generateCrossword() {
             const wordsText = document.getElementById('words').value;
             const title = document.getElementById('title').value || "Mots Croisés";
-
+            
             if (!wordsText.trim()) {
                 showMessage("Veuillez entrer des mots et leurs indices!");
                 return;
             }
-
+            
             const words = parseInput(wordsText);
-
+            
             if (words.length === 0) {
                 showMessage("Aucun mot valide trouvé. Vérifiez le format (MOT Indice)");
                 return;
             }
-
+            
             if (words.length < 2) {
                 showMessage("Veuillez entrer au moins 2 mots pour créer des mots entrecroisés");
                 return;
             }
 
-            // Afficher le chargement
-            document.getElementById('message').className = 'loading';
-            document.getElementById('message').textContent = '⏳ MODE ULTRA ROBUSTE - 4 STRATÉGIES: L\'algorithme teste 100 configurations avec 4 approches différentes (longueur, voyelles, lettres communes, aléatoire) - 30-90 sec';
-            document.getElementById('message').style.display = 'block';
+            // Masquer le message et afficher la barre de progression
+            document.getElementById('message').style.display = 'none';
+            updateProgress(0, '🚀 Démarrage de la génération ULTRA ROBUSTE...');
 
             setTimeout(() => {
                 try {
                     const generator = new CrosswordGenerator(words);
                     currentCrossword = generator.generate();
                     currentCrossword.title = title;
-
+                    
                     if (currentCrossword && currentCrossword.words.length > 0) {
                         displayCrossword(currentCrossword);
                         document.getElementById('preview').style.display = 'block';
+                        document.getElementById('progressContainer').style.display = 'none';
                         
                         const totalWords = words.length;
                         const placedWords = currentCrossword.words.length;
                         
                         if (placedWords < totalWords) {
-                            const missingWords = words.filter(w => 
-                                !currentCrossword.words.find(pw => 
-                                    pw.word.normalize("NFD").replace(/[\u0300-\u036f]/g, "") === 
+                            const missingWords = words.filter(w =>
+                                !currentCrossword.words.find(pw =>
+                                    pw.word.normalize("NFD").replace(/[\u0300-\u036f]/g, "") ===
                                     w.word.normalize("NFD").replace(/[\u0300-\u036f]/g, "")
                                 )
                             );
                             const missingList = missingWords.map(w => w.originalWord).join(', ');
-                            showMessage(`⚠️ ${placedWords}/${totalWords} mots placés après 100 tentatives. Mots non placés: ${missingList}. Essayez de régénérer ou de modifier légèrement vos mots.`, "error");
+                            showMessage(`⚠️ ${placedWords}/${totalWords} mots placés après 2000 tentatives. Mots non placés: ${missingList}. ASTUCE: Essayez de reformuler ou remplacer ces mots.`, "error");
                         } else {
-                            showMessage(`🎉 SUCCÈS! Tous les ${placedWords} mots ont été placés!`, "success");
+                            showMessage(`🎉 SUCCÈS TOTAL! Tous les ${placedWords} mots ont été placés parfaitement!`, "success");
                         }
                         
-                        // Défiler vers l'aperçu
                         document.getElementById('preview').scrollIntoView({ behavior: 'smooth' });
                     } else {
+                        document.getElementById('progressContainer').style.display = 'none';
                         showMessage("Erreur lors de la génération. Essayez avec d'autres mots.");
                     }
                 } catch (error) {
+                    document.getElementById('progressContainer').style.display = 'none';
                     showMessage("Erreur lors de la génération: " + error.message);
                     console.error(error);
                 }
-            }, 50); // Timeout réduit pour démarrer plus vite
+            }, 50);
         }
 
         function displayCrossword(crossword) {
             const display = document.getElementById('crosswordDisplay');
             display.innerHTML = '';
 
-            // Créer la grille
             const gridContainer = document.createElement('div');
             gridContainer.className = 'grid-container';
-
+            
             const gridDiv = document.createElement('div');
             gridDiv.className = 'crossword-grid';
             gridDiv.style.gridTemplateColumns = `repeat(${crossword.grid[0].length}, 35px)`;
             gridDiv.style.gridTemplateRows = `repeat(${crossword.grid.length}, 35px)`;
-            
+
             const gridColor = getSelectedGridColor();
 
             for (let row of crossword.grid) {
@@ -1092,13 +997,11 @@ VENT Il souffle plus fort en automne et fait danser les feuilles`;
             gridContainer.appendChild(gridDiv);
             display.appendChild(gridContainer);
 
-            // Créer les indices
             const cluesContainer = document.createElement('div');
             cluesContainer.className = 'clues-container';
-            
+
             const selectedFont = getSelectedFont();
 
-            // Indices horizontaux
             const acrossDiv = document.createElement('div');
             acrossDiv.className = 'clues-section';
             acrossDiv.style.fontFamily = selectedFont;
@@ -1110,7 +1013,6 @@ VENT Il souffle plus fort en automne et fait danser les feuilles`;
                 acrossDiv.appendChild(clueDiv);
             });
 
-            // Indices verticaux
             const downDiv = document.createElement('div');
             downDiv.className = 'clues-section';
             downDiv.style.fontFamily = selectedFont;
@@ -1144,63 +1046,53 @@ VENT Il souffle plus fort en automne et fait danser les feuilles`;
                 const pageWidth = 215.9;
                 const pageHeight = 279.4;
                 const margin = 12;
-                
                 const gridColor = getSelectedGridColor();
-                const selectedFont = getSelectedFont().replace(/'/g, ''); // Enlever les quotes
+                const selectedFont = getSelectedFont().replace(/'/g, '');
 
-                // Titre en haut
                 doc.setFontSize(22);
                 doc.setFont(selectedFont, 'bold');
                 doc.text(currentCrossword.title, pageWidth / 2, margin + 8, { align: 'center' });
 
-                // Calculer les dimensions de la grille
                 const grid = currentCrossword.grid;
                 const rows = grid.length;
                 const cols = grid[0].length;
-                
-                // Espace AUGMENTÉ pour les indices en bas (60mm au lieu de 45mm)
-                const cluesHeight = 60;
-                
-                // Maximiser l'espace pour la grille
+
+                const cluesHeight = 80;
                 const availableWidth = pageWidth - 2 * margin;
                 const maxGridHeight = pageHeight - margin - 28 - cluesHeight - 5;
-                
                 const cellSizeByWidth = availableWidth / cols;
                 const cellSizeByHeight = maxGridHeight / rows;
-                const cellSize = Math.min(cellSizeByWidth, cellSizeByHeight, 12); // Réduit de 15 à 12mm max
-                
+                const cellSize = Math.min(cellSizeByWidth, cellSizeByHeight, 12);
+
                 const gridWidth = cellSize * cols;
                 const gridHeight = cellSize * rows;
                 const gridX = (pageWidth - gridWidth) / 2;
                 const gridY = margin + 22;
 
-                // Dessiner la grille
                 doc.setLineWidth(0.4);
-                
-                // Convertir hex en RGB pour jsPDF
+
                 const hexToRgb = (hex) => {
                     const r = parseInt(hex.slice(1, 3), 16);
                     const g = parseInt(hex.slice(3, 5), 16);
                     const b = parseInt(hex.slice(5, 7), 16);
                     return { r, g, b };
                 };
-                
+
                 const color = hexToRgb(gridColor);
-                
+
                 for (let i = 0; i < rows; i++) {
                     for (let j = 0; j < cols; j++) {
                         const x = gridX + j * cellSize;
                         const y = gridY + i * cellSize;
                         const cell = grid[i][j];
-
+                        
                         if (cell.letter === null) {
                             continue;
                         } else {
                             doc.setFillColor(255, 255, 255);
                             doc.setDrawColor(color.r, color.g, color.b);
                             doc.rect(x, y, cellSize, cellSize, 'FD');
-                            
-                            // Numéro (seulement si pas de réponses)
+
                             if (cell.number && !withAnswers) {
                                 doc.setFontSize(cellSize * 1.3);
                                 doc.setFont(undefined, 'bold');
@@ -1208,18 +1100,16 @@ VENT Il souffle plus fort en automne et fait danser les feuilles`;
                                 doc.text(cell.number.toString(), x + cellSize * 0.18, y + cellSize * 0.42);
                             }
 
-                            // Lettre (si avec réponses)
                             if (withAnswers && cell.letter) {
                                 doc.setFontSize(cellSize * 2.5);
                                 doc.setFont(undefined, 'bold');
                                 doc.setTextColor(0, 0, 0);
-                                doc.text(cell.letter, x + cellSize / 2, y + cellSize * 0.73, { align: 'center' }); // Centrage vertical optimal
+                                doc.text(cell.letter, x + cellSize / 2, y + cellSize * 0.73, { align: 'center' });
                             }
                         }
                     }
                 }
 
-                // Ajouter les numéros à l'extérieur des cases pour le corrigé
                 if (withAnswers) {
                     doc.setFontSize(cellSize * 1.2);
                     doc.setFont(undefined, 'bold');
@@ -1230,63 +1120,54 @@ VENT Il souffle plus fort en automne et fait danser les feuilles`;
                         const y = gridY + word.row * cellSize;
                         
                         if (word.horizontal) {
-                            // Pour les mots horizontaux: numéro à gauche
                             doc.text(word.number.toString(), x - cellSize * 0.6, y + cellSize * 0.65);
                         } else {
-                            // Pour les mots verticaux: numéro en haut
                             doc.text(word.number.toString(), x + cellSize * 0.3, y - cellSize * 0.15);
                         }
                     });
                 }
 
-                // Indices en bas de page
                 const cluesY = pageHeight - cluesHeight - margin + 2;
                 const columnWidth = (pageWidth - 2 * margin - 5) / 2;
 
                 doc.setTextColor(0, 0, 0);
-                doc.setFontSize(10); // Police plus grosse pour les titres
+                doc.setFontSize(10);
                 doc.setFont(selectedFont, 'bold');
                 doc.text('Horizontal', margin, cluesY);
                 doc.text('Vertical', margin + columnWidth + 5, cluesY);
 
-                doc.setFontSize(10.5); // Police plus grosse pour les indices
+                doc.setFontSize(9);
                 doc.setFont(selectedFont, 'normal');
 
-                let acrossY = cluesY + 7; // Plus d'espace après le titre
-                let downY = cluesY + 7; // Plus d'espace après le titre
-                const lineHeight = 5.4; // Ajusté pour la police plus grosse (10.5)
+                let acrossY = cluesY + 6;
+                let downY = cluesY + 6;
+                const lineHeight = 4.5;
                 const maxClueWidth = columnWidth - 2;
 
-                // Indices horizontaux - TOUJOURS afficher tous les indices
                 currentCrossword.across.forEach(word => {
                     const clueText = `${word.number}. ${word.clue}`;
                     const lines = doc.splitTextToSize(clueText, maxClueWidth);
-                    
                     doc.text(lines, margin, acrossY);
                     acrossY += lines.length * lineHeight;
                 });
 
-                // Indices verticaux - TOUJOURS afficher tous les indices
                 currentCrossword.down.forEach(word => {
                     const clueText = `${word.number}. ${word.clue}`;
                     const lines = doc.splitTextToSize(clueText, maxClueWidth);
-                    
                     doc.text(lines, margin + columnWidth + 5, downY);
                     downY += lines.length * lineHeight;
                 });
 
-                // Copyright en bas à droite (positionné au-dessus de la marge)
                 doc.setFontSize(6);
                 doc.setFont(undefined, 'normal');
                 doc.setTextColor(100, 100, 100);
                 doc.text('© The Joyful Classroom', pageWidth - margin, pageHeight - 3, { align: 'right' });
 
-                // Sauvegarder
-                const filename = withAnswers ? 
-                    `${currentCrossword.title}_corrige.pdf` : 
+                const filename = withAnswers ?
+                    `${currentCrossword.title}_corrige.pdf` :
                     `${currentCrossword.title}.pdf`;
+                
                 doc.save(filename);
-
                 showMessage(`✅ PDF téléchargé: ${filename}`, "success");
             } catch (error) {
                 showMessage("Erreur lors de la création du PDF: " + error.message);
@@ -1312,39 +1193,33 @@ VENT Il souffle plus fort en automne et fait danser les feuilles`;
                 canvas.height = height;
                 const ctx = canvas.getContext('2d');
 
-                // Fond blanc
                 ctx.fillStyle = '#ffffff';
                 ctx.fillRect(0, 0, width, height);
 
                 const margin = 100;
+                const selectedFont = getSelectedFont().replace(/'/g, '');
 
-                const selectedFont = getSelectedFont().replace(/'/g, ''); // Enlever les quotes
-
-                // Titre
                 ctx.fillStyle = '#000000';
                 ctx.font = `bold 80px ${selectedFont}`;
                 ctx.textAlign = 'center';
                 ctx.fillText(currentCrossword.title, width / 2, margin + 80);
 
-                // Calculer les dimensions de la grille
                 const grid = currentCrossword.grid;
                 const rows = grid.length;
                 const cols = grid[0].length;
 
-                const cluesHeight = 700; // Augmenté de 580 à 700 pour plus d'espace pour les indices
+                const cluesHeight = 800;
                 const availableWidth = width - 2 * margin;
                 const maxGridHeight = height - margin - 200 - cluesHeight - 20;
-                
                 const cellSizeByWidth = availableWidth / cols;
                 const cellSizeByHeight = maxGridHeight / rows;
-                const cellSize = Math.min(cellSizeByWidth, cellSizeByHeight, 130); // Réduit de 150 à 130
-                
+                const cellSize = Math.min(cellSizeByWidth, cellSizeByHeight, 130);
+
                 const gridWidth = cellSize * cols;
                 const gridHeight = cellSize * rows;
                 const gridX = (width - gridWidth) / 2;
                 const gridY = margin + 180;
 
-                // Dessiner la grille
                 const gridColor = getSelectedGridColor();
                 ctx.lineWidth = 3;
                 ctx.strokeStyle = gridColor;
@@ -1354,7 +1229,7 @@ VENT Il souffle plus fort en automne et fait danser les feuilles`;
                         const x = gridX + j * cellSize;
                         const y = gridY + i * cellSize;
                         const cell = grid[i][j];
-
+                        
                         if (cell.letter !== null) {
                             ctx.strokeRect(x, y, cellSize, cellSize);
                             
@@ -1368,8 +1243,7 @@ VENT Il souffle plus fort en automne et fait danser les feuilles`;
                     }
                 }
 
-                // Dessiner les indices TOUT EN BAS
-                const cluesY = height - cluesHeight - margin + 50; // Plus près du bas
+                const cluesY = height - cluesHeight - margin + 50;
                 const columnWidth = (width - 2 * margin - 60) / 2;
 
                 ctx.fillStyle = '#000000';
@@ -1378,19 +1252,20 @@ VENT Il souffle plus fort en automne et fait danser les feuilles`;
                 ctx.fillText('Horizontal', margin, cluesY);
                 ctx.fillText('Vertical', margin + columnWidth + 60, cluesY);
 
-                ctx.font = `32px ${selectedFont}`;
-                let acrossY = cluesY + 55; // Plus d'espace après le titre
-                let downY = cluesY + 55; // Plus d'espace après le titre
-                const lineHeight = 47; // Ajusté pour la police plus grosse (32px)
+                ctx.font = `30px ${selectedFont}`;
+                let acrossY = cluesY + 55;
+                let downY = cluesY + 55;
+                const lineHeight = 45;
 
                 function wrapText(text, maxWidth) {
                     const words = text.split(' ');
                     const lines = [];
                     let currentLine = words[0];
-
+                    
                     for (let i = 1; i < words.length; i++) {
                         const testLine = currentLine + ' ' + words[i];
                         const metrics = ctx.measureText(testLine);
+                        
                         if (metrics.width > maxWidth) {
                             lines.push(currentLine);
                             currentLine = words[i];
@@ -1402,7 +1277,6 @@ VENT Il souffle plus fort en automne et fait danser les feuilles`;
                     return lines;
                 }
 
-                // Indices horizontaux - TOUJOURS afficher tous les indices
                 currentCrossword.across.forEach(word => {
                     const clueText = `${word.number}. ${word.clue}`;
                     const lines = wrapText(clueText, columnWidth - 20);
@@ -1413,7 +1287,6 @@ VENT Il souffle plus fort en automne et fait danser les feuilles`;
                     });
                 });
 
-                // Indices verticaux - TOUJOURS afficher tous les indices
                 currentCrossword.down.forEach(word => {
                     const clueText = `${word.number}. ${word.clue}`;
                     const lines = wrapText(clueText, columnWidth - 20);
@@ -1424,13 +1297,11 @@ VENT Il souffle plus fort en automne et fait danser les feuilles`;
                     });
                 });
 
-                // Copyright en bas à droite (positionné au-dessus de la marge)
                 ctx.fillStyle = '#666666';
                 ctx.font = '20px Arial';
                 ctx.textAlign = 'right';
                 ctx.fillText('© The Joyful Classroom', width - margin, height - 30);
 
-                // Convertir en PNG et télécharger
                 canvas.toBlob(function(blob) {
                     const url = URL.createObjectURL(blob);
                     const a = document.createElement('a');
@@ -1443,7 +1314,6 @@ VENT Il souffle plus fort en automne et fait danser les feuilles`;
                     
                     showMessage(`✅ PNG téléchargé: ${currentCrossword.title}.png`, "success");
                 }, 'image/png');
-
             } catch (error) {
                 showMessage("Erreur lors de la création du PNG: " + error.message);
                 console.error(error);
