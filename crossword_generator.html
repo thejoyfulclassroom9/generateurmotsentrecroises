@@ -38,8 +38,32 @@
         .subtitle {
             text-align: center;
             color: #666;
-            margin-bottom: 30px;
+            margin-bottom: 15px;
             font-size: 1.1em;
+        }
+
+        .branding {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 30px;
+            padding: 15px;
+            background: #f9f9f9;
+            border-radius: 10px;
+        }
+
+        .logo {
+            width: 60px;
+            height: 60px;
+            object-fit: contain;
+        }
+
+        .branding-text {
+            font-size: 0.95em;
+            color: #555;
+            font-weight: 500;
+            margin: 0;
         }
 
         .input-section {
@@ -129,6 +153,46 @@
             font-size: 14px;
             font-weight: 500;
             color: #333;
+        }
+
+        .font-options {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+            margin-top: 10px;
+        }
+
+        .font-option {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+            background: white;
+        }
+
+        .font-option:hover {
+            border-color: #000;
+            transform: translateY(-2px);
+            box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+        }
+
+        .font-option input[type="radio"] {
+            cursor: pointer;
+        }
+
+        .font-option input[type="radio"]:checked ~ .font-preview {
+            font-weight: bold;
+            color: #000;
+        }
+
+        .font-preview {
+            font-size: 16px;
+            color: #555;
+            transition: all 0.3s;
         }
 
         .button-group {
@@ -329,13 +393,22 @@
             .color-options {
                 grid-template-columns: 1fr;
             }
+            
+            .font-options {
+                grid-template-columns: 1fr;
+            }
         }
     </style>
 </head>
 <body>
     <div class="container">
         <h1>🧩 Générateur de Mots entrecroisés</h1>
-        <p class="subtitle">Créez des mots entrecroisés professionnels - Version Améliorée</p>
+        <p class="subtitle">Créez des mots entrecroisés professionnels en quelques clics!</p>
+        
+        <div class="branding">
+            <img src="logo.png" alt="The Joyful Classroom" class="logo">
+            <p class="branding-text">Offert gratuitement par The Joyful Classroom</p>
+        </div>
 
         <div class="input-section">
             <div class="input-group">
@@ -395,6 +468,32 @@
             </div>
 
             <div class="input-group">
+                <label>Police de caractères (titre et indices) :</label>
+                <div class="font-options">
+                    <label class="font-option">
+                        <input type="radio" name="fontFamily" value="Arial" checked>
+                        <span class="font-preview" style="font-family: Arial;">Arial</span>
+                    </label>
+                    <label class="font-option">
+                        <input type="radio" name="fontFamily" value="'Comic Sans MS'">
+                        <span class="font-preview" style="font-family: 'Comic Sans MS';">Comic Sans MS</span>
+                    </label>
+                    <label class="font-option">
+                        <input type="radio" name="fontFamily" value="Georgia">
+                        <span class="font-preview" style="font-family: Georgia;">Georgia</span>
+                    </label>
+                    <label class="font-option">
+                        <input type="radio" name="fontFamily" value="'Courier New'">
+                        <span class="font-preview" style="font-family: 'Courier New';">Courier New</span>
+                    </label>
+                    <label class="font-option">
+                        <input type="radio" name="fontFamily" value="Verdana">
+                        <span class="font-preview" style="font-family: Verdana;">Verdana</span>
+                    </label>
+                </div>
+            </div>
+
+            <div class="input-group">
                 <label for="words">Mots et indices :</label>
                 <textarea id="words" placeholder="Entrez un mot, un espace, puis l'indice. Un par ligne.&#10;Exemple:&#10;CHAT Animal domestique qui miaule&#10;CHIEN Meilleur ami de l'homme"></textarea>
                 <p class="help-text">💡 Format: MOT Indice (un espace entre le mot et l'indice, un mot par ligne)</p>
@@ -427,6 +526,23 @@
             const selected = document.querySelector('input[name="gridColor"]:checked');
             return selected ? selected.value : '#FF6B6B';
         }
+
+        function getSelectedFont() {
+            const selected = document.querySelector('input[name="fontFamily"]:checked');
+            return selected ? selected.value : 'Arial';
+        }
+
+        // Appliquer la police au titre principal quand elle change
+        document.addEventListener('DOMContentLoaded', function() {
+            const fontRadios = document.querySelectorAll('input[name="fontFamily"]');
+            const mainTitle = document.querySelector('h1');
+            
+            fontRadios.forEach(radio => {
+                radio.addEventListener('change', function() {
+                    mainTitle.style.fontFamily = getSelectedFont();
+                });
+            });
+        });
 
         function loadExample() {
             const exampleText = `CHRYSANTHÈME Fleur aux nombreux pétales qui fleurit en automne
@@ -913,10 +1029,13 @@ VENT Il souffle plus fort en automne et fait danser les feuilles`;
             // Créer les indices
             const cluesContainer = document.createElement('div');
             cluesContainer.className = 'clues-container';
+            
+            const selectedFont = getSelectedFont();
 
             // Indices horizontaux
             const acrossDiv = document.createElement('div');
             acrossDiv.className = 'clues-section';
+            acrossDiv.style.fontFamily = selectedFont;
             acrossDiv.innerHTML = '<h3>Horizontal</h3>';
             crossword.across.forEach(word => {
                 const clueDiv = document.createElement('div');
@@ -928,6 +1047,7 @@ VENT Il souffle plus fort en automne et fait danser les feuilles`;
             // Indices verticaux
             const downDiv = document.createElement('div');
             downDiv.className = 'clues-section';
+            downDiv.style.fontFamily = selectedFont;
             downDiv.innerHTML = '<h3>Vertical</h3>';
             crossword.down.forEach(word => {
                 const clueDiv = document.createElement('div');
@@ -960,10 +1080,11 @@ VENT Il souffle plus fort en automne et fait danser les feuilles`;
                 const margin = 12;
                 
                 const gridColor = getSelectedGridColor();
+                const selectedFont = getSelectedFont().replace(/'/g, ''); // Enlever les quotes
 
                 // Titre en haut
                 doc.setFontSize(22);
-                doc.setFont(undefined, 'bold');
+                doc.setFont(selectedFont, 'bold');
                 doc.text(currentCrossword.title, pageWidth / 2, margin + 8, { align: 'center' });
 
                 // Calculer les dimensions de la grille
@@ -1038,12 +1159,12 @@ VENT Il souffle plus fort en automne et fait danser les feuilles`;
 
                 doc.setTextColor(0, 0, 0);
                 doc.setFontSize(10); // Police plus grosse pour les titres
-                doc.setFont(undefined, 'bold');
+                doc.setFont(selectedFont, 'bold');
                 doc.text('Horizontal', margin, cluesY);
                 doc.text('Vertical', margin + columnWidth + 5, cluesY);
 
                 doc.setFontSize(8.5); // Police plus grosse pour les indices
-                doc.setFont(undefined, 'normal');
+                doc.setFont(selectedFont, 'normal');
 
                 let acrossY = cluesY + 5;
                 let downY = cluesY + 5;
@@ -1115,9 +1236,11 @@ VENT Il souffle plus fort en automne et fait danser les feuilles`;
 
                 const margin = 100;
 
+                const selectedFont = getSelectedFont().replace(/'/g, ''); // Enlever les quotes
+
                 // Titre
                 ctx.fillStyle = '#000000';
-                ctx.font = 'bold 80px Arial';
+                ctx.font = `bold 80px ${selectedFont}`;
                 ctx.textAlign = 'center';
                 ctx.fillText(currentCrossword.title, width / 2, margin + 80);
 
@@ -1168,12 +1291,12 @@ VENT Il souffle plus fort en automne et fait danser les feuilles`;
                 const columnWidth = (width - 2 * margin - 60) / 2;
 
                 ctx.fillStyle = '#000000';
-                ctx.font = 'bold 44px Arial';
+                ctx.font = `bold 44px ${selectedFont}`;
                 ctx.textAlign = 'left';
                 ctx.fillText('Horizontal', margin, cluesY);
                 ctx.fillText('Vertical', margin + columnWidth + 60, cluesY);
 
-                ctx.font = '30px Arial';
+                ctx.font = `30px ${selectedFont}`;
                 let acrossY = cluesY + 45;
                 let downY = cluesY + 45;
                 const lineHeight = 44;
