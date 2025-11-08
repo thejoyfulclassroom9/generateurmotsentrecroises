@@ -657,26 +657,28 @@ if (this.placedWords.length > maxPlaced) {
                 this.renumberWords();
                 
                 // ⚡ VÉRIFICATION CRITIQUE
-                if (!this.verifyAllWordsInGrid()) {
-                    console.log(`⚠️ ${this.placedWords.length} mots placés mais invalides après trimGrid()`);
-                    continue;
-                }
-                
-                maxPlaced = this.placedWords.length;
-                bestResult = {
-                    grid: JSON.parse(JSON.stringify(this.grid)),
-                    words: JSON.parse(JSON.stringify(this.placedWords)),
-                    across: this.placedWords.filter(w => w.horizontal).sort((a, b) => a.number - b.number),
-                    down: this.placedWords.filter(w => !w.horizontal).sort((a, b) => a.number - b.number)
-                };
-                console.log(`✨ Nouveau record VÉRIFIÉ: ${maxPlaced}/${this.words.length} mots (tentative ${attempt})`);
-            }
 // ⚡ SI TOUS LES MOTS SONT PLACÉS, SUCCÈS!
 if (this.placedWords.length === this.words.length && this.verifyAllWordsInGrid()) {
 console.log(`🎉 SUCCÈS TOTAL VÉRIFIÉ à la tentative ${attempt + 1}!`);
 updateProgress(100, `✅ SUCCÈS! Tous les ${this.words.length} mots sont placés!`);
 break; // SORTIR de la boucle infinie
 }
+
+    if (!this.verifyAllWordsInGrid()) {
+    console.log(`⚠️ ${this.placedWords.length} mots placés mais invalides après trimGrid()`);
+    continue;
+    }
+
+    maxPlaced = this.placedWords.length;
+    bestResult = {
+    grid: JSON.parse(JSON.stringify(this.grid)),
+    words: JSON.parse(JSON.stringify(this.placedWords)),
+    across: this.placedWords.filter(w => w.horizontal).sort((a, b) => a.number - b.number),
+    down: this.placedWords.filter(w => !w.horizontal).sort((a, b) => a.number - b.number)
+    };
+    console.log(`✨ Nouveau record VÉRIFIÉ: ${maxPlaced}/${this.words.length} mots (tentative ${attempt})`);
+    }
+
 
 attempt++;
 
@@ -957,33 +959,33 @@ this.grid[pos.row][pos.col].number = i + 1;
 }
 }
 }
-}
-
-    // ⚡ MÉTHODE CRITIQUE : Vérifier que tous les mots sont dans la grille finale
-    verifyAllWordsInGrid() {
-        for (let word of this.placedWords) {
-            const wordStr = word.word.normalize("NFD").replace(/[̀-ͯ]/g, "");
+// ⚡ MÉTHODE CRITIQUE : Vérifier que tous les mots sont dans la grille finale
+verifyAllWordsInGrid() {
+    for (let word of this.placedWords) {
+        const wordStr = word.word.normalize("NFD").replace(/[̀-ͯ]/g, "");
+        
+        // Vérifier chaque lettre du mot
+        for (let i = 0; i < wordStr.length; i++) {
+            const r = word.horizontal ? word.row : word.row + i;
+            const c = word.horizontal ? word.col + i : word.col;
             
-            // Vérifier chaque lettre du mot
-            for (let i = 0; i < wordStr.length; i++) {
-                const r = word.horizontal ? word.row : word.row + i;
-                const c = word.horizontal ? word.col + i : word.col;
-                
-                // Hors limites de la grille?
-                if (r < 0 || r >= this.grid.length || c < 0 || c >= this.grid[0].length) {
-                    console.log(`❌ Mot ${word.word} hors limites à position (${r},${c})`);
-                    return false;
-                }
-                
-                // Lettre correcte dans la grille?
-                if (this.grid[r][c].letter !== wordStr[i]) {
-                    console.log(`❌ Mot ${word.word} invalide à position (${r},${c}): attendu ${wordStr[i]}, trouvé ${this.grid[r][c].letter}`);
-                    return false;
-                }
+            // Hors limites de la grille?
+            if (r < 0 || r >= this.grid.length || c < 0 || c >= (this.grid[0] ? this.grid[0].length : 0)) {
+                console.log(`❌ Mot ${word.word} hors limites à position (${r},${c})`);
+                return false;
+            }
+            
+            // Lettre correcte dans la grille?
+            if (this.grid[r][c].letter !== wordStr[i]) {
+                console.log(`❌ Mot ${word.word} invalide à position (${r},${c}): attendu ${wordStr[i]}, trouvé ${this.grid[r][c].letter}`);
+                return false;
             }
         }
-        return true;
     }
+    return true;
+}
+
+}
 
 async function generateCrossword() {
 if (isGenerating) {
