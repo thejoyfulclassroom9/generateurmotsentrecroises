@@ -625,6 +625,16 @@ VENT Il souffle plus fort en automne et fait danser les feuilles`;
                     const offset = (positionVariant - 15) * 3;
                     startRow += offset;
                     startCol += offset;
+                    
+                    // S'assurer que les coordonnées sont valides
+                    startRow = Math.max(1, Math.min(startRow, this.gridSize - 10));
+                    startCol = Math.max(1, Math.min(startCol, this.gridSize - firstWord.word.length - 1));
+                    
+                    if (horizontal) {
+                        startCol = Math.max(1, Math.min(startCol, this.gridSize - firstWord.word.length - 1));
+                    } else {
+                        startRow = Math.max(1, Math.min(startRow, this.gridSize - firstWord.word.length - 1));
+                    }
 
                     this.placeWord(firstWord, startRow, startCol, horizontal);
 
@@ -681,9 +691,27 @@ VENT Il souffle plus fort en automne et fait danser les feuilles`;
             placeWord(wordObj, row, col, horizontal) {
                 const word = wordObj.word;
                 
+                // Vérifier que les coordonnées sont valides
+                if (row < 0 || col < 0 || row >= this.gridSize || col >= this.gridSize) {
+                    return false;
+                }
+                
+                const endRow = horizontal ? row : row + word.length - 1;
+                const endCol = horizontal ? col + word.length - 1 : col;
+                
+                if (endRow >= this.gridSize || endCol >= this.gridSize) {
+                    return false;
+                }
+                
                 for (let i = 0; i < word.length; i++) {
                     const r = horizontal ? row : row + i;
                     const c = horizontal ? col + i : col;
+                    
+                    // Double vérification de sécurité
+                    if (r < 0 || r >= this.gridSize || c < 0 || c >= this.gridSize) {
+                        return false;
+                    }
+                    
                     this.grid[r][c].letter = word[i];
                 }
                 
@@ -750,7 +778,7 @@ VENT Il souffle plus fort en automne et fait danser les feuilles`;
             }
 
             canPlaceWord(word, row, col, horizontal) {
-                if (row < 1 || col < 1) return false;
+                if (row < 1 || col < 1 || row >= this.gridSize - 1 || col >= this.gridSize - 1) return false;
                 
                 const endRow = horizontal ? row : row + word.length - 1;
                 const endCol = horizontal ? col + word.length - 1 : col;
@@ -762,6 +790,12 @@ VENT Il souffle plus fort en automne et fait danser les feuilles`;
                 for (let i = 0; i < word.length; i++) {
                     const r = horizontal ? row : row + i;
                     const c = horizontal ? col + i : col;
+                    
+                    // Vérification supplémentaire de sécurité
+                    if (r < 0 || r >= this.gridSize || c < 0 || c >= this.gridSize) {
+                        return false;
+                    }
+                    
                     const cell = this.grid[r][c].letter;
                     
                     if (cell !== null) {
@@ -771,12 +805,18 @@ VENT Il souffle plus fort en automne et fait danser les feuilles`;
                         hasIntersection = true;
                     } else {
                         if (horizontal) {
-                            if (this.grid[r - 1][c].letter !== null || this.grid[r + 1][c].letter !== null) {
-                                return false;
+                            // Vérifier que les indices sont valides avant d'accéder aux cellules
+                            if (r - 1 >= 0 && r + 1 < this.gridSize) {
+                                if (this.grid[r - 1][c].letter !== null || this.grid[r + 1][c].letter !== null) {
+                                    return false;
+                                }
                             }
                         } else {
-                            if (this.grid[r][c - 1].letter !== null || this.grid[r][c + 1].letter !== null) {
-                                return false;
+                            // Vérifier que les indices sont valides avant d'accéder aux cellules
+                            if (c - 1 >= 0 && c + 1 < this.gridSize) {
+                                if (this.grid[r][c - 1].letter !== null || this.grid[r][c + 1].letter !== null) {
+                                    return false;
+                                }
                             }
                         }
                     }
@@ -800,6 +840,11 @@ VENT Il souffle plus fort en automne et fait danser les feuilles`;
                 for (let i = 0; i < word.length; i++) {
                     const r = horizontal ? row : row + i;
                     const c = horizontal ? col + i : col;
+                    
+                    // Vérification de sécurité
+                    if (r < 0 || r >= this.gridSize || c < 0 || c >= this.gridSize) {
+                        continue;
+                    }
                     
                     if (this.grid[r][c].letter === word[i]) {
                         intersections++;
@@ -833,13 +878,18 @@ VENT Il souffle plus fort en automne et fait danser les feuilles`;
 
                 for (let i = 0; i < this.gridSize; i++) {
                     for (let j = 0; j < this.gridSize; j++) {
-                        if (this.grid[i][j].letter !== null) {
+                        if (this.grid[i] && this.grid[i][j] && this.grid[i][j].letter !== null) {
                             minRow = Math.min(minRow, i);
                             maxRow = Math.max(maxRow, i);
                             minCol = Math.min(minCol, j);
                             maxCol = Math.max(maxCol, j);
                         }
                     }
+                }
+
+                // S'assurer qu'on a trouvé au moins une lettre
+                if (minRow === this.gridSize || maxRow === 0) {
+                    return; // Grille vide, ne rien faire
                 }
 
                 minRow = Math.max(0, minRow - 1);
@@ -889,7 +939,12 @@ VENT Il souffle plus fort en automne et fait danser les feuilles`;
                     for (let word of pos.words) {
                         word.number = i + 1;
                     }
-                    this.grid[pos.row][pos.col].number = i + 1;
+                    
+                    // Vérification de sécurité avant d'accéder à la grille
+                    if (pos.row >= 0 && pos.row < this.grid.length && 
+                        pos.col >= 0 && pos.col < this.grid[0].length) {
+                        this.grid[pos.row][pos.col].number = i + 1;
+                    }
                 }
             }
         }
