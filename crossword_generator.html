@@ -609,10 +609,16 @@ VENT Il souffle plus fort en automne et fait danser les feuilles`;
                 let bestResult = null;
                 let maxPlaced = 0;
 
-                // Essayer 50 fois avec différentes stratégies (augmenté de 30)
-                for (let attempt = 0; attempt < 50; attempt++) {
+                // MODE ULTRA ROBUSTE: Essayer 100 fois avec différentes stratégies
+                for (let attempt = 0; attempt < 100; attempt++) {
                     this.initGrid();
                     this.placedWords = [];
+                    
+                    // Afficher la progression tous les 10 essais
+                    if (attempt % 10 === 0 && attempt > 0) {
+                        const progressMsg = `⏳ MODE ULTRA ROBUSTE: Tentative ${attempt}/100... Meilleur résultat: ${maxPlaced}/${this.words.length} mots`;
+                        document.getElementById('message').textContent = progressMsg;
+                    }
                     
                     if (this.words.length === 0) return null;
                     
@@ -637,8 +643,8 @@ VENT Il souffle plus fort en automne et fait danser les feuilles`;
                     for (let i = 1; i < wordsToPlace.length; i++) {
                         let placed = false;
                         
-                        // Essayer jusqu'à 500 positions différentes (augmenté de 300)
-                        for (let tryCount = 0; tryCount < 500 && !placed; tryCount++) {
+                        // MODE ULTRA ROBUSTE: Essayer jusqu'à 1000 positions différentes
+                        for (let tryCount = 0; tryCount < 1000 && !placed; tryCount++) {
                             placed = this.findAndPlaceWord(wordsToPlace[i]);
                         }
                         
@@ -949,7 +955,7 @@ VENT Il souffle plus fort en automne et fait danser les feuilles`;
 
             // Afficher le chargement
             document.getElementById('message').className = 'loading';
-            document.getElementById('message').textContent = '⏳ Génération en cours... L\'algorithme teste jusqu\'à 50 configurations différentes pour placer tous les mots (15-30 secondes)';
+            document.getElementById('message').textContent = '⏳ MODE ULTRA ROBUSTE: L\'algorithme teste jusqu\'à 100 configurations différentes pour placer TOUS les mots (30-90 secondes)';
             document.getElementById('message').style.display = 'block';
 
             setTimeout(() => {
@@ -973,9 +979,9 @@ VENT Il souffle plus fort en automne et fait danser les feuilles`;
                                 )
                             );
                             const missingList = missingWords.map(w => w.originalWord).join(', ');
-                            showMessage(`⚠️ ${placedWords}/${totalWords} mots placés. Mots non placés: ${missingList}`, "error");
+                            showMessage(`⚠️ ${placedWords}/${totalWords} mots placés après 100 tentatives. Mots non placés: ${missingList}. Essayez de régénérer ou de modifier légèrement vos mots.`, "error");
                         } else {
-                            showMessage(`✅ ${placedWords} mots placés avec succès!`, "success");
+                            showMessage(`🎉 SUCCÈS! Tous les ${placedWords} mots ont été placés!`, "success");
                         }
                         
                         // Défiler vers l'aperçu
@@ -987,7 +993,7 @@ VENT Il souffle plus fort en automne et fait danser les feuilles`;
                     showMessage("Erreur lors de la génération: " + error.message);
                     console.error(error);
                 }
-            }, 100);
+            }, 50); // Timeout réduit pour démarrer plus vite
         }
 
         function displayCrossword(crossword) {
