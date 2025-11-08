@@ -1021,9 +1021,9 @@ setTimeout(async () => {
 try {
 const generator = new CrosswordGenerator(words);
 currentCrossword = await generator.generate();
-currentCrossword.title = title;
 
-if (currentCrossword && currentCrossword.words.length > 0) {
+if (currentCrossword && currentCrossword.words && currentCrossword.words.length > 0) {
+currentCrossword.title = title;
 displayCrossword(currentCrossword);
 document.getElementById('preview').style.display = 'block';
 document.getElementById('progressContainer').style.display = 'none';
