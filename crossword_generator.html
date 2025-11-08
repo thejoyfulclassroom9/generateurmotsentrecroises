@@ -364,7 +364,7 @@ grid-template-columns: 1fr;
 <body>
 <div class="container">
 <h1>🧩 Générateur de Mots entrecroisés</h1>
-<p class="subtitle">Version AMÉLIORÉE - Placement garanti et indices toujours en bas!</p>
+<p class="subtitle">Version CORRIGÉE - Placement garanti ou refus!</p>
 
 <div class="branding">
 <img src="logo.png" alt="The Joyful Classroom" class="logo">
@@ -568,7 +568,7 @@ class CrosswordGenerator {
 constructor(words) {
 this.words = words;
 this.grid = [];
-this.gridSize = 150; // Grille très grande pour maximiser les chances
+this.gridSize = 150;
 this.placedWords = [];
 }
 
@@ -579,8 +579,10 @@ let attempt = 0;
 let bestResult = null;
 let maxPlaced = 0;
 
-// ⚡ CHANGEMENT CLÉ : Boucle VRAIMENT infinie jusqu'à succès
-while (true) {
+// ⚡ LIMITE DE SÉCURITÉ : Maximum 8000 tentatives
+const MAX_ATTEMPTS = 8000;
+
+while (attempt < MAX_ATTEMPTS) {
 this.initGrid();
 this.placedWords = [];
 
@@ -594,7 +596,7 @@ else if (cycle === 1) strategy = 'VOYELLES';
 else if (cycle === 2) strategy = 'LETTRES COMMUNES';
 else strategy = 'ALÉATOIRE';
 
-updateProgress(progress, `⏳ Tentative ${attempt} - Stratégie: ${strategy} - Meilleur: ${maxPlaced}/${this.words.length} mots`);
+updateProgress(progress, `⏳ Tentative ${attempt}/${MAX_ATTEMPTS} - Stratégie: ${strategy} - Meilleur: ${maxPlaced}/${this.words.length} mots`);
 await new Promise(resolve => setTimeout(resolve, 0));
 }
 
@@ -640,6 +642,7 @@ startCol = Math.max(5, Math.min(startCol, this.gridSize - 10));
 }
 
 if (!this.placeWord(firstWord, startRow, startCol, horizontal)) {
+attempt++;
 continue;
 }
 
@@ -651,43 +654,58 @@ placed = this.findAndPlaceWord(wordsToPlace[i]);
 }
 }
 
-// Garder le meilleur résultat
+// Vérifier si on a placé des mots
 if (this.placedWords.length > maxPlaced) {
-                this.trimGrid();
-                this.renumberWords();
-                
-                // ⚡ VÉRIFICATION CRITIQUE
-// ⚡ SI TOUS LES MOTS SONT PLACÉS, SUCCÈS!
-if (this.placedWords.length === this.words.length && this.verifyAllWordsInGrid()) {
-console.log(`🎉 SUCCÈS TOTAL VÉRIFIÉ à la tentative ${attempt + 1}!`);
-updateProgress(100, `✅ SUCCÈS! Tous les ${this.words.length} mots sont placés!`);
-break; // SORTIR de la boucle infinie
+this.trimGrid();
+this.renumberWords();
+
+// ⚡ VÉRIFICATION CRITIQUE : Tous les mots valides dans la grille?
+if (!this.verifyAllWordsInGrid()) {
+console.log(`⚠️ ${this.placedWords.length} mots placés mais invalides après trimGrid()`);
+attempt++;
+continue;
 }
 
-    if (!this.verifyAllWordsInGrid()) {
-    console.log(`⚠️ ${this.placedWords.length} mots placés mais invalides après trimGrid()`);
-    continue;
-    }
+// ⚡ SI TOUS LES MOTS SONT PLACÉS, SUCCÈS IMMÉDIAT!
+if (this.placedWords.length === this.words.length) {
+console.log(`🎉 SUCCÈS TOTAL VÉRIFIÉ à la tentative ${attempt + 1}!`);
+updateProgress(100, `✅ SUCCÈS! Tous les ${this.words.length} mots sont placés!`);
 
-    maxPlaced = this.placedWords.length;
-    bestResult = {
-    grid: JSON.parse(JSON.stringify(this.grid)),
-    words: JSON.parse(JSON.stringify(this.placedWords)),
-    across: this.placedWords.filter(w => w.horizontal).sort((a, b) => a.number - b.number),
-    down: this.placedWords.filter(w => !w.horizontal).sort((a, b) => a.number - b.number)
-    };
-    console.log(`✨ Nouveau record VÉRIFIÉ: ${maxPlaced}/${this.words.length} mots (tentative ${attempt})`);
-    }
+// Retourner le résultat complet
+return {
+grid: JSON.parse(JSON.stringify(this.grid)),
+words: JSON.parse(JSON.stringify(this.placedWords)),
+across: this.placedWords.filter(w => w.horizontal).sort((a, b) => a.number - b.number),
+down: this.placedWords.filter(w => !w.horizontal).sort((a, b) => a.number - b.number),
+complete: true
+};
+}
 
+// Sauvegarder le meilleur résultat incomplet (pour référence seulement)
+maxPlaced = this.placedWords.length;
+bestResult = {
+grid: JSON.parse(JSON.stringify(this.grid)),
+words: JSON.parse(JSON.stringify(this.placedWords)),
+across: this.placedWords.filter(w => w.horizontal).sort((a, b) => a.number - b.number),
+down: this.placedWords.filter(w => !w.horizontal).sort((a, b) => a.number - b.number),
+complete: false
+};
+console.log(`✨ Nouveau record: ${maxPlaced}/${this.words.length} mots (tentative ${attempt + 1})`);
+}
 
 attempt++;
 
 if (attempt % 500 === 0) {
-console.log(`💪 ${attempt} tentatives, meilleur: ${maxPlaced}/${this.words.length} - ON CONTINUE!`);
+console.log(`💪 ${attempt} tentatives, meilleur: ${maxPlaced}/${this.words.length}`);
 }
 }
 
-return bestResult;
+// ⚡ FIN DES TENTATIVES : Retourner null si pas de solution complète
+console.log(`❌ Limite de ${MAX_ATTEMPTS} tentatives atteinte. Meilleur résultat: ${maxPlaced}/${this.words.length} mots`);
+updateProgress(0, `❌ Impossible de placer tous les mots après ${MAX_ATTEMPTS} tentatives`);
+
+// NE PAS retourner de résultat incomplet - retourner null
+return null;
 }
 
 shuffleArray(array) {
@@ -959,32 +977,28 @@ this.grid[pos.row][pos.col].number = i + 1;
 }
 }
 }
-// ⚡ MÉTHODE CRITIQUE : Vérifier que tous les mots sont dans la grille finale
+
 verifyAllWordsInGrid() {
-    for (let word of this.placedWords) {
-        const wordStr = word.word.normalize("NFD").replace(/[̀-ͯ]/g, "");
-        
-        // Vérifier chaque lettre du mot
-        for (let i = 0; i < wordStr.length; i++) {
-            const r = word.horizontal ? word.row : word.row + i;
-            const c = word.horizontal ? word.col + i : word.col;
-            
-            // Hors limites de la grille?
-            if (r < 0 || r >= this.grid.length || c < 0 || c >= (this.grid[0] ? this.grid[0].length : 0)) {
-                console.log(`❌ Mot ${word.word} hors limites à position (${r},${c})`);
-                return false;
-            }
-            
-            // Lettre correcte dans la grille?
-            if (this.grid[r][c].letter !== wordStr[i]) {
-                console.log(`❌ Mot ${word.word} invalide à position (${r},${c}): attendu ${wordStr[i]}, trouvé ${this.grid[r][c].letter}`);
-                return false;
-            }
-        }
-    }
-    return true;
+for (let word of this.placedWords) {
+const wordStr = word.word.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+
+for (let i = 0; i < wordStr.length; i++) {
+const r = word.horizontal ? word.row : word.row + i;
+const c = word.horizontal ? word.col + i : word.col;
+
+if (r < 0 || r >= this.grid.length || c < 0 || c >= (this.grid[0] ? this.grid[0].length : 0)) {
+console.log(`❌ Mot ${word.word} hors limites à position (${r},${c})`);
+return false;
 }
 
+if (this.grid[r][c].letter !== wordStr[i]) {
+console.log(`❌ Mot ${word.word} invalide à position (${r},${c}): attendu ${wordStr[i]}, trouvé ${this.grid[r][c].letter}`);
+return false;
+}
+}
+}
+return true;
+}
 }
 
 async function generateCrossword() {
@@ -1015,39 +1029,29 @@ return;
 
 isGenerating = true;
 document.getElementById('message').style.display = 'none';
-updateProgress(0, '🚀 Initialisation du générateur AMÉLIORÉ...');
+updateProgress(0, '🚀 Initialisation du générateur CORRIGÉ...');
 
 setTimeout(async () => {
 try {
 const generator = new CrosswordGenerator(words);
 currentCrossword = await generator.generate();
 
-if (currentCrossword && currentCrossword.words && currentCrossword.words.length > 0) {
+if (currentCrossword && currentCrossword.complete && currentCrossword.words && currentCrossword.words.length === words.length) {
+// ✅ SUCCÈS COMPLET
 currentCrossword.title = title;
 displayCrossword(currentCrossword);
 document.getElementById('preview').style.display = 'block';
 document.getElementById('progressContainer').style.display = 'none';
 
-const totalWords = words.length;
-const placedWords = currentCrossword.words.length;
-
-if (placedWords < totalWords) {
-const missingWords = words.filter(w =>
-!currentCrossword.words.find(pw =>
-pw.word.normalize("NFD").replace(/[\u0300-\u036f]/g, "") ===
-w.word.normalize("NFD").replace(/[\u0300-\u036f]/g, "")
-)
-);
-const missingList = missingWords.map(w => w.originalWord).join(', ');
-showMessage(`⚠️ Après de nombreuses tentatives: ${placedWords}/${totalWords} mots placés. Mots non placés: ${missingList}. Ces mots sont très difficiles à placer ensemble.`, "error");
-} else {
-showMessage(`🎉 SUCCÈS PARFAIT! Tous les ${placedWords} mots ont été placés avec succès!`, "success");
-}
-
+showMessage(`🎉 SUCCÈS PARFAIT! Tous les ${words.length} mots ont été placés avec succès!`, "success");
 document.getElementById('preview').scrollIntoView({ behavior: 'smooth' });
 } else {
+// ❌ ÉCHEC - Aucun résultat complet
 document.getElementById('progressContainer').style.display = 'none';
-showMessage("Erreur lors de la génération. Essayez avec d'autres mots.");
+document.getElementById('preview').style.display = 'none';
+
+const maxPlaced = currentCrossword ? currentCrossword.words.length : 0;
+showMessage(`❌ Impossible de placer tous les mots après 8000 tentatives. Meilleur résultat: ${maxPlaced}/${words.length} mots. Essayez de réduire le nombre de mots ou de choisir des mots plus faciles à entrelacer.`, "error");
 }
 } catch (error) {
 document.getElementById('progressContainer').style.display = 'none';
@@ -1129,15 +1133,13 @@ cluesContainer.appendChild(downDiv);
 display.appendChild(cluesContainer);
 }
 
-// ⚡ FONCTION AMÉLIORÉE pour calculer la hauteur des indices DYNAMIQUEMENT
 function calculateCluesHeight(doc, crossword, selectedFont, columnWidth, fontSize = 8) {
 doc.setFontSize(fontSize);
 doc.setFont(selectedFont, 'normal');
-  
+
 const lineHeight = 3.8;
 let maxHeight = 0;
 
-// Calculer hauteur pour Horizontal
 let acrossHeight = 0;
 crossword.across.forEach(word => {
 const clueText = `${word.number}. ${word.clue}`;
@@ -1145,7 +1147,6 @@ const lines = doc.splitTextToSize(clueText, columnWidth - 2);
 acrossHeight += lines.length * lineHeight;
 });
 
-// Calculer hauteur pour Vertical
 let downHeight = 0;
 crossword.down.forEach(word => {
 const clueText = `${word.number}. ${word.clue}`;
@@ -1153,10 +1154,9 @@ const lines = doc.splitTextToSize(clueText, columnWidth - 2);
 downHeight += lines.length * lineHeight;
 });
 
-// Prendre la plus grande hauteur + titres + marge
 maxHeight = Math.max(acrossHeight, downHeight);
-maxHeight += 10; // Espace pour les titres "Horizontal" et "Vertical"
-  
+maxHeight += 10;
+
 return maxHeight;
 }
 
@@ -1180,7 +1180,6 @@ const margin = 12;
 const gridColor = getSelectedGridColor();
 const selectedFont = getSelectedFont().replace(/'/g, '');
 
-// Titre
 doc.setFontSize(22);
 doc.setFont(selectedFont, 'bold');
 doc.text(currentCrossword.title, pageWidth / 2, margin + 8, { align: 'center' });
@@ -1189,11 +1188,9 @@ const grid = currentCrossword.grid;
 const rows = grid.length;
 const cols = grid[0].length;
 
-// ⚡ CALCUL DYNAMIQUE de la hauteur des indices
 const columnWidth = (pageWidth - 2 * margin - 5) / 2;
 const cluesHeight = calculateCluesHeight(doc, currentCrossword, selectedFont, columnWidth) + 5;
 
-// Maintenant on calcule l'espace disponible pour la grille
 const availableWidth = pageWidth - 2 * margin;
 const maxGridHeight = pageHeight - margin - 28 - cluesHeight - 5;
 
@@ -1217,7 +1214,6 @@ return { r, g, b };
 
 const color = hexToRgb(gridColor);
 
-// Dessiner la grille
 for (let i = 0; i < rows; i++) {
 for (let j = 0; j < cols; j++) {
 const x = gridX + j * cellSize;
@@ -1265,7 +1261,6 @@ doc.text(word.number.toString(), x + cellSize * 0.3, y - cellSize * 0.15);
 });
 }
 
-// ⚡ INDICES TOUJOURS EN BAS avec la hauteur calculée dynamiquement
 const cluesY = pageHeight - cluesHeight - margin + 2;
 
 doc.setTextColor(0, 0, 0);
@@ -1317,7 +1312,6 @@ function downloadPDFWithAnswers() {
 downloadPDF(true);
 }
 
-// ⚡ FONCTION PNG AMÉLIORÉE avec calcul dynamique des indices
 function downloadPNG() {
 if (!currentCrossword) {
 showMessage("Veuillez d'abord générer des mots entrecroisés!");
@@ -1348,7 +1342,6 @@ const grid = currentCrossword.grid;
 const rows = grid.length;
 const cols = grid[0].length;
 
-// ⚡ CALCUL DYNAMIQUE de la hauteur des indices
 function calculateCanvasCluesHeight() {
 ctx.font = `28px ${selectedFont}`;
 const lineHeight = 40;
@@ -1389,7 +1382,7 @@ downHeight += lines.length * lineHeight;
 });
 
 maxHeight = Math.max(acrossHeight, downHeight);
-maxHeight += 100; // Espace pour les titres
+maxHeight += 100;
 return maxHeight;
 }
 
@@ -1430,7 +1423,6 @@ ctx.fillText(cell.number.toString(), x + cellSize * 0.12, y + cellSize * 0.32);
 }
 }
 
-// ⚡ INDICES TOUJOURS EN BAS avec hauteur calculée
 const cluesY = height - cluesHeight - margin + 50;
 const columnWidth = (width - 2 * margin - 60) / 2;
 
