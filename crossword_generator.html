@@ -1,506 +1,507 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Générateur de Mots entrecroisés - Version FINALE</title>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-        body {
-            font-family: Arial, sans-serif;
-            background: #000000;
-            padding: 20px;
-            min-height: 100vh;
-        }
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            background: white;
-            border-radius: 15px;
-            padding: 30px;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
-        }
-        h1 {
-            text-align: center;
-            color: #000000;
-            margin-bottom: 10px;
-            font-size: 2.5em;
-        }
-        .subtitle {
-            text-align: center;
-            color: #666;
-            margin-bottom: 15px;
-            font-size: 1.1em;
-        }
-        .branding {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 15px;
-            margin-bottom: 30px;
-            padding: 15px;
-            background: #ffffff;
-            border-radius: 10px;
-        }
-        .logo {
-            width: 60px;
-            height: 60px;
-            object-fit: cover;
-            border-radius: 50%;
-            border: 3px solid #000;
-        }
-        .branding-text {
-            font-size: 0.95em;
-            color: #555;
-            font-weight: 500;
-            margin: 0;
-        }
-        .input-section {
-            margin-bottom: 30px;
-        }
-        .input-group {
-            margin-bottom: 20px;
-        }
-        label {
-            display: block;
-            font-weight: bold;
-            margin-bottom: 8px;
-            color: #333;
-        }
-        input[type="text"], textarea {
-            width: 100%;
-            padding: 12px;
-            border: 2px solid #ddd;
-            border-radius: 8px;
-            font-size: 16px;
-            font-family: Arial, sans-serif;
-            transition: border-color 0.3s;
-        }
-        input[type="text"]:focus, textarea:focus {
-            outline: none;
-            border-color: #667eea;
-        }
-        textarea {
-            min-height: 200px;
-            resize: vertical;
-            font-family: 'Courier New', monospace;
-        }
-        .help-text {
-            font-size: 0.9em;
-            color: #666;
-            margin-top: 5px;
-        }
-        .color-options {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 12px;
-            margin-top: 10px;
-        }
-        .color-option {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            padding: 10px;
-            border: 2px solid #ddd;
-            border-radius: 8px;
-            cursor: pointer;
-            transition: all 0.3s;
-            background: white;
-        }
-        .color-option:hover {
-            border-color: #000;
-            transform: translateY(-2px);
-            box-shadow: 0 3px 10px rgba(0,0,0,0.1);
-        }
-        .color-option input[type="radio"] {
-            cursor: pointer;
-        }
-        .color-option input[type="radio"]:checked + .color-swatch {
-            border: 3px solid #000;
-        }
-        .color-swatch {
-            width: 30px;
-            height: 30px;
-            border-radius: 5px;
-            border: 2px solid #ccc;
-            transition: all 0.3s;
-        }
-        .color-name {
-            font-size: 14px;
-            font-weight: 500;
-            color: #333;
-        }
-        .font-options {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 12px;
-            margin-top: 10px;
-        }
-        .font-option {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            padding: 12px;
-            border: 2px solid #ddd;
-            border-radius: 8px;
-            cursor: pointer;
-            transition: all 0.3s;
-            background: white;
-        }
-        .font-option:hover {
-            border-color: #000;
-            transform: translateY(-2px);
-            box-shadow: 0 3px 10px rgba(0,0,0,0.1);
-        }
-        .font-option input[type="radio"] {
-            cursor: pointer;
-        }
-        .font-option input[type="radio"]:checked ~ .font-preview {
-            font-weight: bold;
-            color: #000;
-        }
-        .font-preview {
-            font-size: 16px;
-            color: #555;
-            transition: all 0.3s;
-        }
-        .button-group {
-            display: flex;
-            gap: 15px;
-            margin-top: 20px;
-            flex-wrap: wrap;
-        }
-        button {
-            padding: 15px 30px;
-            font-size: 16px;
-            font-weight: bold;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            transition: all 0.3s;
-            flex: 1;
-            min-width: 200px;
-        }
-        .btn-primary {
-            background: #000000;
-            color: white;
-        }
-        .btn-primary:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.6);
-        }
-        .btn-success {
-            background: #FA0F00;
-            color: white;
-        }
-        .btn-success:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(250, 15, 0, 0.5);
-        }
-        .btn-secondary {
-            background: #f0f0f0;
-            color: #333;
-        }
-        .btn-secondary:hover {
-            background: #e0e0e0;
-        }
-        .btn-png {
-            background: #FFD93D;
-            color: #000;
-            font-weight: bold;
-        }
-        .btn-png:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(255, 217, 61, 0.5);
-        }
-        button:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-            transform: none !important;
-        }
-        .preview-section {
-            margin-top: 40px;
-            padding-top: 30px;
-            border-top: 3px solid #f0f0f0;
-        }
-        .preview-section h2 {
-            color: #000000;
-            margin-bottom: 20px;
-            text-align: center;
-        }
-        .grid-container {
-            display: flex;
-            justify-content: center;
-            margin-bottom: 30px;
-            overflow-x: auto;
-        }
-        .crossword-grid {
-            display: inline-grid;
-            gap: 0;
-            border: 2px solid #333;
-            background: white;
-        }
-        .cell {
-            width: 35px;
-            height: 35px;
-            border: 1px solid #999;
-            position: relative;
-            background: white;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: bold;
-            font-size: 16px;
-        }
-        .cell.black {
-            background: white;
-            border-color: white;
-        }
-        .cell-number {
-            position: absolute;
-            top: 3px;
-            left: 4px;
-            font-size: 9px;
-            font-weight: bold;
-            color: #000000;
-        }
-        .clues-container {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 30px;
-            margin-top: 20px;
-        }
-        .clues-section {
-            background: #f9f9f9;
-            padding: 20px;
-            border-radius: 10px;
-        }
-        .clues-section h3 {
-            color: #000000;
-            margin-bottom: 15px;
-            font-size: 1.3em;
-        }
-        .clue-item {
-            margin-bottom: 10px;
-            line-height: 1.6;
-        }
-        .clue-number {
-            font-weight: bold;
-            color: #000000;
-            margin-right: 5px;
-        }
-        .error-message {
-            background: #ffebee;
-            color: #c62828;
-            padding: 15px;
-            border-radius: 8px;
-            margin-top: 20px;
-            border-left: 4px solid #c62828;
-        }
-        .success-message {
-            background: #e8f5e9;
-            color: #2e7d32;
-            padding: 15px;
-            border-radius: 8px;
-            margin-top: 20px;
-            border-left: 4px solid #2e7d32;
-        }
-        .loading {
-            text-align: center;
-            padding: 20px;
-            color: #000000;
-            font-size: 1.2em;
-        }
-        .progress-bar {
-            width: 100%;
-            height: 30px;
-            background: #f0f0f0;
-            border-radius: 15px;
-            overflow: hidden;
-            margin: 10px 0;
-        }
-        .progress-fill {
-            height: 100%;
-            background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
-            transition: width 0.3s;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-weight: bold;
-        }
-        @media print {
-            body {
-                background: white;
-            }
-            .input-section, .button-group {
-                display: none;
-            }
-        }
-        @media (max-width: 768px) {
-            .clues-container {
-                grid-template-columns: 1fr;
-            }
-            .button-group {
-                flex-direction: column;
-            }
-            button {
-                min-width: 100%;
-            }
-            .color-options {
-                grid-template-columns: 1fr;
-            }
-            .font-options {
-                grid-template-columns: 1fr;
-            }
-        }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Générateur de Mots entrecroisés - Version AMÉLIORÉE</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<style>
+* {
+margin: 0;
+padding: 0;
+box-sizing: border-box;
+}
+body {
+font-family: Arial, sans-serif;
+background: #000000;
+padding: 20px;
+min-height: 100vh;
+}
+.container {
+max-width: 1200px;
+margin: 0 auto;
+background: white;
+border-radius: 15px;
+padding: 30px;
+box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+}
+h1 {
+text-align: center;
+color: #000000;
+margin-bottom: 10px;
+font-size: 2.5em;
+}
+.subtitle {
+text-align: center;
+color: #666;
+margin-bottom: 15px;
+font-size: 1.1em;
+}
+.branding {
+display: flex;
+align-items: center;
+justify-content: center;
+gap: 15px;
+margin-bottom: 30px;
+padding: 15px;
+background: #ffffff;
+border-radius: 10px;
+}
+.logo {
+width: 60px;
+height: 60px;
+object-fit: cover;
+border-radius: 50%;
+border: 3px solid #000;
+}
+.branding-text {
+font-size: 0.95em;
+color: #555;
+font-weight: 500;
+margin: 0;
+}
+.input-section {
+margin-bottom: 30px;
+}
+.input-group {
+margin-bottom: 20px;
+}
+label {
+display: block;
+font-weight: bold;
+margin-bottom: 8px;
+color: #333;
+}
+input[type="text"], textarea {
+width: 100%;
+padding: 12px;
+border: 2px solid #ddd;
+border-radius: 8px;
+font-size: 16px;
+font-family: Arial, sans-serif;
+transition: border-color 0.3s;
+}
+input[type="text"]:focus, textarea:focus {
+outline: none;
+border-color: #667eea;
+}
+textarea {
+min-height: 200px;
+resize: vertical;
+font-family: 'Courier New', monospace;
+}
+.help-text {
+font-size: 0.9em;
+color: #666;
+margin-top: 5px;
+}
+.color-options {
+display: grid;
+grid-template-columns: repeat(3, 1fr);
+gap: 12px;
+margin-top: 10px;
+}
+.color-option {
+display: flex;
+align-items: center;
+gap: 8px;
+padding: 10px;
+border: 2px solid #ddd;
+border-radius: 8px;
+cursor: pointer;
+transition: all 0.3s;
+background: white;
+}
+.color-option:hover {
+border-color: #000;
+transform: translateY(-2px);
+box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+}
+.color-option input[type="radio"] {
+cursor: pointer;
+}
+.color-option input[type="radio"]:checked + .color-swatch {
+border: 3px solid #000;
+}
+.color-swatch {
+width: 30px;
+height: 30px;
+border-radius: 5px;
+border: 2px solid #ccc;
+transition: all 0.3s;
+}
+.color-name {
+font-size: 14px;
+font-weight: 500;
+color: #333;
+}
+.font-options {
+display: grid;
+grid-template-columns: repeat(2, 1fr);
+gap: 12px;
+margin-top: 10px;
+}
+.font-option {
+display: flex;
+align-items: center;
+gap: 10px;
+padding: 12px;
+border: 2px solid #ddd;
+border-radius: 8px;
+cursor: pointer;
+transition: all 0.3s;
+background: white;
+}
+.font-option:hover {
+border-color: #000;
+transform: translateY(-2px);
+box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+}
+.font-option input[type="radio"] {
+cursor: pointer;
+}
+.font-option input[type="radio"]:checked ~ .font-preview {
+font-weight: bold;
+color: #000;
+}
+.font-preview {
+font-size: 16px;
+color: #555;
+transition: all 0.3s;
+}
+.button-group {
+display: flex;
+gap: 15px;
+margin-top: 20px;
+flex-wrap: wrap;
+}
+button {
+padding: 15px 30px;
+font-size: 16px;
+font-weight: bold;
+border: none;
+border-radius: 8px;
+cursor: pointer;
+transition: all 0.3s;
+flex: 1;
+min-width: 200px;
+}
+.btn-primary {
+background: #000000;
+color: white;
+}
+.btn-primary:hover {
+transform: translateY(-2px);
+box-shadow: 0 5px 15px rgba(0, 0, 0, 0.6);
+}
+.btn-success {
+background: #FA0F00;
+color: white;
+}
+.btn-success:hover {
+transform: translateY(-2px);
+box-shadow: 0 5px 15px rgba(250, 15, 0, 0.5);
+}
+.btn-secondary {
+background: #f0f0f0;
+color: #333;
+}
+.btn-secondary:hover {
+background: #e0e0e0;
+}
+.btn-png {
+background: #FFD93D;
+color: #000;
+font-weight: bold;
+}
+.btn-png:hover {
+transform: translateY(-2px);
+box-shadow: 0 5px 15px rgba(255, 217, 61, 0.5);
+}
+button:disabled {
+opacity: 0.5;
+cursor: not-allowed;
+transform: none !important;
+}
+.preview-section {
+margin-top: 40px;
+padding-top: 30px;
+border-top: 3px solid #f0f0f0;
+}
+.preview-section h2 {
+color: #000000;
+margin-bottom: 20px;
+text-align: center;
+}
+.grid-container {
+display: flex;
+justify-content: center;
+margin-bottom: 30px;
+overflow-x: auto;
+}
+.crossword-grid {
+display: inline-grid;
+gap: 0;
+border: 2px solid #333;
+background: white;
+}
+.cell {
+width: 35px;
+height: 35px;
+border: 1px solid #999;
+position: relative;
+background: white;
+display: flex;
+align-items: center;
+justify-content: center;
+font-weight: bold;
+font-size: 16px;
+}
+.cell.black {
+background: white;
+border-color: white;
+}
+.cell-number {
+position: absolute;
+top: 3px;
+left: 4px;
+font-size: 9px;
+font-weight: bold;
+color: #000000;
+}
+.clues-container {
+display: grid;
+grid-template-columns: 1fr 1fr;
+gap: 30px;
+margin-top: 20px;
+}
+.clues-section {
+background: #f9f9f9;
+padding: 20px;
+border-radius: 10px;
+}
+.clues-section h3 {
+color: #000000;
+margin-bottom: 15px;
+font-size: 1.3em;
+}
+.clue-item {
+margin-bottom: 10px;
+line-height: 1.6;
+}
+.clue-number {
+font-weight: bold;
+color: #000000;
+margin-right: 5px;
+}
+.error-message {
+background: #ffebee;
+color: #c62828;
+padding: 15px;
+border-radius: 8px;
+margin-top: 20px;
+border-left: 4px solid #c62828;
+}
+.success-message {
+background: #e8f5e9;
+color: #2e7d32;
+padding: 15px;
+border-radius: 8px;
+margin-top: 20px;
+border-left: 4px solid #2e7d32;
+}
+.loading {
+text-align: center;
+padding: 20px;
+color: #000000;
+font-size: 1.2em;
+}
+.progress-bar {
+width: 100%;
+height: 30px;
+background: #f0f0f0;
+border-radius: 15px;
+overflow: hidden;
+margin: 10px 0;
+}
+.progress-fill {
+height: 100%;
+background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+transition: width 0.3s;
+display: flex;
+align-items: center;
+justify-content: center;
+color: white;
+font-weight: bold;
+}
+@media print {
+body {
+background: white;
+}
+.input-section, .button-group {
+display: none;
+}
+}
+@media (max-width: 768px) {
+.clues-container {
+grid-template-columns: 1fr;
+}
+.button-group {
+flex-direction: column;
+}
+button {
+min-width: 100%;
+}
+.color-options {
+grid-template-columns: 1fr;
+}
+.font-options {
+grid-template-columns: 1fr;
+}
+}
+</style>
 </head>
 <body>
-    <div class="container">
-        <h1>🧩 Générateur de Mots entrecroisés</h1>
-        <p class="subtitle">Version FINALE - Ne lâche JAMAIS avant d'avoir placé tous les mots!</p>
-        
-        <div class="branding">
-            <img src="logo.png" alt="The Joyful Classroom" class="logo">
-            <p class="branding-text">Offert gratuitement par <strong>The Joyful Classroom</strong></p>
-        </div>
+<div class="container">
+<h1>🧩 Générateur de Mots entrecroisés</h1>
+<p class="subtitle">Version AMÉLIORÉE - Placement garanti et indices toujours en bas!</p>
 
-        <div class="input-section">
-            <div class="input-group">
-                <label for="title">Titre des mots entrecroisés :</label>
-                <input type="text" id="title" placeholder="Ex: L'automne, Les animaux, etc." value="Mots entrecroisés">
-            </div>
+<div class="branding">
+<img src="logo.png" alt="The Joyful Classroom" class="logo">
+<p class="branding-text">Offert gratuitement par <strong>The Joyful Classroom</strong></p>
+</div>
 
-            <div class="input-group">
-                <label>Couleur de la grille :</label>
-                <div class="color-options">
-                    <label class="color-option">
-                        <input type="radio" name="gridColor" value="#FF6B6B" checked>
-                        <span class="color-swatch" style="background: #FF6B6B;"></span>
-                        <span class="color-name">Rouge corail</span>
-                    </label>
-                    <label class="color-option">
-                        <input type="radio" name="gridColor" value="#FFA552">
-                        <span class="color-swatch" style="background: #FFA552;"></span>
-                        <span class="color-name">Orange doux</span>
-                    </label>
-                    <label class="color-option">
-                        <input type="radio" name="gridColor" value="#FFD93D">
-                        <span class="color-swatch" style="background: #FFD93D;"></span>
-                        <span class="color-name">Jaune doré</span>
-                    </label>
-                    <label class="color-option">
-                        <input type="radio" name="gridColor" value="#91C499">
-                        <span class="color-swatch" style="background: #91C499;"></span>
-                        <span class="color-name">Vert sauge</span>
-                    </label>
-                    <label class="color-option">
-                        <input type="radio" name="gridColor" value="#2E8B57">
-                        <span class="color-swatch" style="background: #2E8B57;"></span>
-                        <span class="color-name">Vert forêt</span>
-                    </label>
-                    <label class="color-option">
-                        <input type="radio" name="gridColor" value="#4BA3C3">
-                        <span class="color-swatch" style="background: #4BA3C3;"></span>
-                        <span class="color-name">Bleu azur</span>
-                    </label>
-                    <label class="color-option">
-                        <input type="radio" name="gridColor" value="#2C497F">
-                        <span class="color-swatch" style="background: #2C497F;"></span>
-                        <span class="color-name">Bleu profond</span>
-                    </label>
-                    <label class="color-option">
-                        <input type="radio" name="gridColor" value="#000000">
-                        <span class="color-swatch" style="background: #000000;"></span>
-                        <span class="color-name">Noir total</span>
-                    </label>
-                    <label class="color-option">
-                        <input type="radio" name="gridColor" value="#E056FD">
-                        <span class="color-swatch" style="background: #E056FD;"></span>
-                        <span class="color-name">Rose framboise</span>
-                    </label>
-                </div>
-            </div>
+<div class="input-section">
+<div class="input-group">
+<label for="title">Titre des mots entrecroisés :</label>
+<input type="text" id="title" placeholder="Ex: L'automne, Les animaux, etc." value="Mots entrecroisés">
+</div>
 
-            <div class="input-group">
-                <label>Police de caractères (titre et indices) :</label>
-                <div class="font-options">
-                    <label class="font-option">
-                        <input type="radio" name="fontFamily" value="Arial" checked>
-                        <span class="font-preview" style="font-family: Arial;">Arial</span>
-                    </label>
-                    <label class="font-option">
-                        <input type="radio" name="fontFamily" value="'Comic Sans MS'">
-                        <span class="font-preview" style="font-family: 'Comic Sans MS';">Comic Sans MS</span>
-                    </label>
-                    <label class="font-option">
-                        <input type="radio" name="fontFamily" value="Georgia">
-                        <span class="font-preview" style="font-family: Georgia;">Georgia</span>
-                    </label>
-                    <label class="font-option">
-                        <input type="radio" name="fontFamily" value="'Courier New'">
-                        <span class="font-preview" style="font-family: 'Courier New';">Courier New</span>
-                    </label>
-                    <label class="font-option">
-                        <input type="radio" name="fontFamily" value="Verdana">
-                        <span class="font-preview" style="font-family: Verdana;">Verdana</span>
-                    </label>
-                </div>
-            </div>
+<div class="input-group">
+<label>Couleur de la grille :</label>
+<div class="color-options">
+<label class="color-option">
+<input type="radio" name="gridColor" value="#FF6B6B" checked>
+<span class="color-swatch" style="background: #FF6B6B;"></span>
+<span class="color-name">Rouge corail</span>
+</label>
+<label class="color-option">
+<input type="radio" name="gridColor" value="#FFA552">
+<span class="color-swatch" style="background: #FFA552;"></span>
+<span class="color-name">Orange doux</span>
+</label>
+<label class="color-option">
+<input type="radio" name="gridColor" value="#FFD93D">
+<span class="color-swatch" style="background: #FFD93D;"></span>
+<span class="color-name">Jaune doré</span>
+</label>
+<label class="color-option">
+<input type="radio" name="gridColor" value="#91C499">
+<span class="color-swatch" style="background: #91C499;"></span>
+<span class="color-name">Vert sauge</span>
+</label>
+<label class="color-option">
+<input type="radio" name="gridColor" value="#2E8B57">
+<span class="color-swatch" style="background: #2E8B57;"></span>
+<span class="color-name">Vert forêt</span>
+</label>
+<label class="color-option">
+<input type="radio" name="gridColor" value="#4BA3C3">
+<span class="color-swatch" style="background: #4BA3C3;"></span>
+<span class="color-name">Bleu azur</span>
+</label>
+<label class="color-option">
+<input type="radio" name="gridColor" value="#2C497F">
+<span class="color-swatch" style="background: #2C497F;"></span>
+<span class="color-name">Bleu profond</span>
+</label>
+<label class="color-option">
+<input type="radio" name="gridColor" value="#000000">
+<span class="color-swatch" style="background: #000000;"></span>
+<span class="color-name">Noir total</span>
+</label>
+<label class="color-option">
+<input type="radio" name="gridColor" value="#E056FD">
+<span class="color-swatch" style="background: #E056FD;"></span>
+<span class="color-name">Rose framboise</span>
+</label>
+</div>
+</div>
 
-            <div class="input-group">
-                <label for="words">Mots et indices :</label>
-                <textarea id="words" placeholder="Entrez un mot, un espace, puis l'indice. Un par ligne.&#10;Exemple:&#10;CHAT Animal domestique qui miaule&#10;CHIEN Meilleur ami de l'homme"></textarea>
-                <p class="help-text">💡 Format: MOT Indice (un espace entre le mot et l'indice, un mot par ligne)</p>
-            </div>
+<div class="input-group">
+<label>Police de caractères (titre et indices) :</label>
+<div class="font-options">
+<label class="font-option">
+<input type="radio" name="fontFamily" value="Arial" checked>
+<span class="font-preview" style="font-family: Arial;">Arial</span>
+</label>
+<label class="font-option">
+<input type="radio" name="fontFamily" value="'Comic Sans MS'">
+<span class="font-preview" style="font-family: 'Comic Sans MS';">Comic Sans MS</span>
+</label>
+<label class="font-option">
+<input type="radio" name="fontFamily" value="Georgia">
+<span class="font-preview" style="font-family: Georgia;">Georgia</span>
+</label>
+<label class="font-option">
+<input type="radio" name="fontFamily" value="'Courier New'">
+<span class="font-preview" style="font-family: 'Courier New';">Courier New</span>
+</label>
+<label class="font-option">
+<input type="radio" name="fontFamily" value="Verdana">
+<span class="font-preview" style="font-family: Verdana;">Verdana</span>
+</label>
+</div>
+</div>
 
-            <div class="button-group">
-                <button class="btn-primary" onclick="generateCrossword()">Générer les mots entrecroisés ✅</button>
-                <button class="btn-primary" onclick="loadExample()">Charger l'exemple de "L'automne" 🍁</button>
-            </div>
-        </div>
+<div class="input-group">
+<label for="words">Mots et indices :</label>
+<textarea id="words" placeholder="Entrez un mot, un espace, puis l'indice. Un par ligne.&#10;Exemple:&#10;CHAT Animal domestique qui miaule&#10;CHIEN Meilleur ami de l'homme"></textarea>
+<p class="help-text">💡 Format: MOT Indice (un espace entre le mot et l'indice, un mot par ligne)</p>
+</div>
 
-        <div id="message"></div>
-        <div id="progressContainer" style="display: none;">
-            <div class="progress-bar">
-                <div id="progressBar" class="progress-fill" style="width: 0%;">0%</div>
-            </div>
-            <p id="progressText" style="text-align: center; margin-top: 10px; font-weight: bold; color: #667eea;"></p>
-        </div>
+<div class="button-group">
+<button class="btn-primary" onclick="generateCrossword()">Générer les mots entrecroisés ✅</button>
+<button class="btn-primary" onclick="loadExample()">Charger l'exemple de "L'automne" 🍁</button>
+</div>
+</div>
 
-        <div id="preview" class="preview-section" style="display: none;">
-            <h2>📄 Aperçu</h2>
-            <div id="crosswordDisplay"></div>
-            <div class="button-group">
-                <button class="btn-success" onclick="downloadPDF()">📥 Télécharger en PDF</button>
-                <button class="btn-success" onclick="downloadPDFWithAnswers()">📥 PDF avec corrigé</button>
-                <button class="btn-png" onclick="downloadPNG()">🖼️ Télécharger en PNG</button>
-            </div>
-        </div>
-    </div>
+<div id="message"></div>
 
-    <script>
-        let currentCrossword = null;
-        let isGenerating = false;
+<div id="progressContainer" style="display: none;">
+<div class="progress-bar">
+<div id="progressBar" class="progress-fill" style="width: 0%;">0%</div>
+</div>
+<p id="progressText" style="text-align: center; margin-top: 10px; font-weight: bold; color: #667eea;"></p>
+</div>
 
-        function getSelectedGridColor() {
-            const selected = document.querySelector('input[name="gridColor"]:checked');
-            return selected ? selected.value : '#FF6B6B';
-        }
+<div id="preview" class="preview-section" style="display: none;">
+<h2>📄 Aperçu</h2>
+<div id="crosswordDisplay"></div>
+<div class="button-group">
+<button class="btn-success" onclick="downloadPDF()">📥 Télécharger en PDF</button>
+<button class="btn-success" onclick="downloadPDFWithAnswers()">📥 PDF avec corrigé</button>
+<button class="btn-png" onclick="downloadPNG()">🖼 Télécharger en PNG</button>
+</div>
+</div>
+</div>
 
-        function getSelectedFont() {
-            const selected = document.querySelector('input[name="fontFamily"]:checked');
-            return selected ? selected.value : 'Arial';
-        }
+<script>
+let currentCrossword = null;
+let isGenerating = false;
 
-        function loadExample() {
-            const exampleText = `CHRYSANTHÈME Fleur aux nombreux pétales qui fleurit en automne
+function getSelectedGridColor() {
+const selected = document.querySelector('input[name="gridColor"]:checked');
+return selected ? selected.value : '#FF6B6B';
+}
+
+function getSelectedFont() {
+const selected = document.querySelector('input[name="fontFamily"]:checked');
+return selected ? selected.value : 'Arial';
+}
+
+function loadExample() {
+const exampleText = `CHRYSANTHÈME Fleur aux nombreux pétales qui fleurit en automne
 CHAMPIGNON Il pousse dans les forêts humides après la pluie
 FEUILLAGE Ensemble des feuilles d'un arbre qui change de couleur
 BERNACHE Oie sauvage du Canada qui vole en formation en V
@@ -516,892 +517,963 @@ RÉCOLTE Action de ramasser les fruits et légumes mûrs dans les champs
 VERGER Endroit où poussent les pommiers et où on cueille des fruits
 VENT Il souffle plus fort en automne et fait danser les feuilles`;
 
-            document.getElementById('words').value = exampleText;
-            document.getElementById('title').value = "L'automne";
-            showMessage("Exemple chargé! Cliquez sur 'Générer les mots entrecroisés'", "success");
-        }
-
-        function parseInput(text) {
-            const lines = text.trim().split('\n').filter(line => line.trim());
-            const words = [];
-            
-            for (let line of lines) {
-                const match = line.match(/^([A-ZÀ-ÿ]+)\s+(.+)$/i);
-                if (match) {
-                    words.push({
-                        word: match[1].toUpperCase().normalize("NFD").replace(/[\u0300-\u036f]/g, ""),
-                        clue: match[2].trim(),
-                        originalWord: match[1].toUpperCase()
-                    });
-                }
-            }
-            
-            return words;
-        }
-
-        function showMessage(text, type = "error") {
-            const messageDiv = document.getElementById('message');
-            messageDiv.className = type === "success" ? "success-message" : "error-message";
-            messageDiv.textContent = text;
-            messageDiv.style.display = 'block';
-            
-            setTimeout(() => {
-                if (!isGenerating) {
-                    messageDiv.style.display = 'none';
-                }
-            }, 8000);
-        }
-
-        function updateProgress(percent, text) {
-            const progressContainer = document.getElementById('progressContainer');
-            const progressBar = document.getElementById('progressBar');
-            const progressText = document.getElementById('progressText');
-            
-            progressContainer.style.display = 'block';
-            progressBar.style.width = percent + '%';
-            progressBar.textContent = Math.round(percent) + '%';
-            progressText.textContent = text;
-        }
-
-        class CrosswordGenerator {
-            constructor(words) {
-                this.words = words;
-                this.grid = [];
-                this.gridSize = 120; // GRILLE ENCORE PLUS GRANDE
-                this.placedWords = [];
-            }
-
-            async generate() {
-                if (this.words.length === 0) return null;
-
-                let attempt = 0;
-                let bestResult = null;
-                let maxPlaced = 0;
-                const UNLIMITED = true; // Mode sans limite!
-
-                // NE PAS S'ARRÊTER TANT QUE TOUS LES MOTS NE SONT PAS PLACÉS
-                while (UNLIMITED || attempt < 10000) {
-                    this.initGrid();
-                    this.placedWords = [];
-
-                    // Afficher la progression tous les 5 essais
-                    if (attempt % 5 === 0) {
-                        const progress = maxPlaced === this.words.length ? 100 : (maxPlaced / this.words.length) * 100;
-                        let strategy = '';
-                        const cycle = Math.floor(attempt / 100) % 4;
-                        if (cycle === 0) strategy = 'LONGUEUR';
-                        else if (cycle === 1) strategy = 'VOYELLES';
-                        else if (cycle === 2) strategy = 'LETTRES COMMUNES';
-                        else strategy = 'ALÉATOIRE';
-                        
-                        updateProgress(progress, `⏳ Tentative ${attempt} - Stratégie: ${strategy} - Meilleur résultat: ${maxPlaced}/${this.words.length} mots placés`);
-                        
-                        // Donner du temps au navigateur pour mettre à jour l'interface
-                        await new Promise(resolve => setTimeout(resolve, 0));
-                    }
-
-                    // Alterner les stratégies par cycles de 100
-                    let wordsToPlace;
-                    const cycle = Math.floor(attempt / 100) % 4;
-                    if (cycle === 0) {
-                        wordsToPlace = [...this.words].sort((a, b) => b.word.length - a.word.length);
-                    } else if (cycle === 1) {
-                        wordsToPlace = [...this.words].sort((a, b) => {
-                            const vowelsA = (a.word.match(/[AEIOUY]/g) || []).length;
-                            const vowelsB = (b.word.match(/[AEIOUY]/g) || []).length;
-                            return vowelsB - vowelsA;
-                        });
-                    } else if (cycle === 2) {
-                        wordsToPlace = [...this.words].sort((a, b) => {
-                            const commonA = (a.word.match(/[EAISTNR]/g) || []).length;
-                            const commonB = (b.word.match(/[EAISTNR]/g) || []).length;
-                            return commonB - commonA;
-                        });
-                    } else {
-                        wordsToPlace = this.shuffleArray([...this.words]);
-                    }
-
-                    // Placer le premier mot avec BEAUCOUP de variation
-                    const firstWord = wordsToPlace[0];
-                    const horizontal = attempt % 2 === 0;
-                    
-                    // Position centrale avec variations massives
-                    let startRow = Math.floor(this.gridSize / 2);
-                    let startCol = Math.floor(this.gridSize / 2);
-                    
-                    // Variation basée sur le numéro de tentative
-                    const offsetRow = (attempt % 40 - 20) * 2;
-                    const offsetCol = ((attempt * 7) % 40 - 20) * 2;
-                    
-                    startRow += offsetRow;
-                    startCol += offsetCol;
-                    
-                    // S'assurer que c'est dans les limites
-                    if (horizontal) {
-                        startRow = Math.max(5, Math.min(startRow, this.gridSize - 10));
-                        startCol = Math.max(5, Math.min(startCol, this.gridSize - firstWord.word.length - 5));
-                    } else {
-                        startRow = Math.max(5, Math.min(startRow, this.gridSize - firstWord.word.length - 5));
-                        startCol = Math.max(5, Math.min(startCol, this.gridSize - 10));
-                    }
-
-                    if (!this.placeWord(firstWord, startRow, startCol, horizontal)) {
-                        continue; // Si on ne peut pas placer le premier mot, recommencer
-                    }
-
-                    // Essayer de placer tous les autres mots
-                    for (let i = 1; i < wordsToPlace.length; i++) {
-                        let placed = false;
-                        // Essayer BEAUCOUP de fois pour chaque mot
-                        for (let tryCount = 0; tryCount < 5000 && !placed; tryCount++) {
-                            placed = this.findAndPlaceWord(wordsToPlace[i]);
-                        }
-                    }
-
-                    // Garder le meilleur résultat
-                    if (this.placedWords.length > maxPlaced) {
-                        maxPlaced = this.placedWords.length;
-                        this.trimGrid();
-                        this.renumberWords();
-                        
-                        bestResult = {
-                            grid: JSON.parse(JSON.stringify(this.grid)),
-                            words: JSON.parse(JSON.stringify(this.placedWords)),
-                            across: this.placedWords.filter(w => w.horizontal).sort((a, b) => a.number - b.number),
-                            down: this.placedWords.filter(w => !w.horizontal).sort((a, b) => a.number - b.number)
-                        };
-
-                        console.log(`✨ Nouveau record: ${maxPlaced}/${this.words.length} mots placés (tentative ${attempt})`);
-                    }
-
-                    // SI TOUS LES MOTS SONT PLACÉS, SUCCÈS!
-                    if (this.placedWords.length === this.words.length) {
-                        console.log(`🎉 SUCCÈS TOTAL à la tentative ${attempt + 1}!`);
-                        updateProgress(100, `✅ SUCCÈS! Tous les ${this.words.length} mots sont placés!`);
-                        break;
-                    }
-
-                    attempt++;
-
-                    // Message d'encouragement tous les 1000 essais
-                    if (attempt % 1000 === 0) {
-                        console.log(`💪 ${attempt} tentatives effectuées, meilleur: ${maxPlaced}/${this.words.length} - ON CONTINUE!`);
-                    }
-                }
-
-                return bestResult;
-            }
-
-            shuffleArray(array) {
-                const shuffled = [...array];
-                for (let i = shuffled.length - 1; i > 0; i--) {
-                    const j = Math.floor(Math.random() * (i + 1));
-                    [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
-                }
-                return shuffled;
-            }
-
-            initGrid() {
-                this.grid = Array(this.gridSize).fill(null).map(() =>
-                    Array(this.gridSize).fill(null).map(() => ({ letter: null, number: null }))
-                );
-            }
-
-            placeWord(wordObj, row, col, horizontal) {
-                const word = wordObj.word;
-                
-                if (row < 2 || col < 2 || row >= this.gridSize - 2 || col >= this.gridSize - 2) {
-                    return false;
-                }
-                
-                const endRow = horizontal ? row : row + word.length - 1;
-                const endCol = horizontal ? col + word.length - 1 : col;
-                
-                if (endRow >= this.gridSize - 2 || endCol >= this.gridSize - 2) {
-                    return false;
-                }
-                
-                for (let i = 0; i < word.length; i++) {
-                    const r = horizontal ? row : row + i;
-                    const c = horizontal ? col + i : col;
-                    
-                    if (r < 0 || r >= this.gridSize || c < 0 || c >= this.gridSize) {
-                        return false;
-                    }
-                    
-                    this.grid[r][c].letter = word[i];
-                }
-                
-                this.placedWords.push({
-                    word: wordObj.originalWord,
-                    clue: wordObj.clue,
-                    row: row,
-                    col: col,
-                    horizontal: horizontal,
-                    number: 0,
-                    length: word.length
-                });
-                
-                return true;
-            }
-
-            findAndPlaceWord(wordObj) {
-                const word = wordObj.word;
-                const possiblePlacements = [];
-
-                for (let placedWord of this.placedWords) {
-                    const placedWordStr = placedWord.word.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
-                    
-                    for (let i = 0; i < word.length; i++) {
-                        for (let j = 0; j < placedWordStr.length; j++) {
-                            if (word[i] === placedWordStr[j]) {
-                                let newRow, newCol, horizontal;
-                                
-                                if (placedWord.horizontal) {
-                                    horizontal = false;
-                                    newRow = placedWord.row - i;
-                                    newCol = placedWord.col + j;
-                                } else {
-                                    horizontal = true;
-                                    newRow = placedWord.row + j;
-                                    newCol = placedWord.col - i;
-                                }
-                                
-                                if (this.canPlaceWord(word, newRow, newCol, horizontal)) {
-                                    const score = this.scorePosition(word, newRow, newCol, horizontal);
-                                    possiblePlacements.push({
-                                        row: newRow,
-                                        col: newCol,
-                                        horizontal: horizontal,
-                                        score: score
-                                    });
-                                }
-                            }
-                        }
-                    }
-                }
-
-                if (possiblePlacements.length > 0) {
-                    possiblePlacements.sort((a, b) => b.score - a.score);
-                    const topCount = Math.min(30, possiblePlacements.length);
-                    const randomIndex = Math.floor(Math.random() * topCount);
-                    const best = possiblePlacements[randomIndex];
-                    
-                    return this.placeWord(wordObj, best.row, best.col, best.horizontal);
-                }
-
-                return false;
-            }
-
-            canPlaceWord(word, row, col, horizontal) {
-                if (row < 2 || col < 2 || row >= this.gridSize - 2 || col >= this.gridSize - 2) {
-                    return false;
-                }
-                
-                const endRow = horizontal ? row : row + word.length - 1;
-                const endCol = horizontal ? col + word.length - 1 : col;
-                
-                if (endRow >= this.gridSize - 2 || endCol >= this.gridSize - 2) {
-                    return false;
-                }
-
-                let hasIntersection = false;
-
-                for (let i = 0; i < word.length; i++) {
-                    const r = horizontal ? row : row + i;
-                    const c = horizontal ? col + i : col;
-                    
-                    if (r < 0 || r >= this.gridSize || c < 0 || c >= this.gridSize) {
-                        return false;
-                    }
-                    
-                    const cell = this.grid[r][c].letter;
-                    
-                    if (cell !== null) {
-                        if (cell !== word[i]) {
-                            return false;
-                        }
-                        hasIntersection = true;
-                    } else {
-                        if (horizontal) {
-                            if (r - 1 >= 0 && r + 1 < this.gridSize) {
-                                if (this.grid[r - 1][c].letter !== null || this.grid[r + 1][c].letter !== null) {
-                                    return false;
-                                }
-                            }
-                        } else {
-                            if (c - 1 >= 0 && c + 1 < this.gridSize) {
-                                if (this.grid[r][c - 1].letter !== null || this.grid[r][c + 1].letter !== null) {
-                                    return false;
-                                }
-                            }
-                        }
-                    }
-                }
-
-                if (horizontal) {
-                    if (col > 0 && this.grid[row][col - 1].letter !== null) return false;
-                    if (endCol < this.gridSize - 1 && this.grid[row][endCol + 1].letter !== null) return false;
-                } else {
-                    if (row > 0 && this.grid[row - 1][col].letter !== null) return false;
-                    if (endRow < this.gridSize - 1 && this.grid[endRow + 1][col].letter !== null) return false;
-                }
-
-                return this.placedWords.length === 0 || hasIntersection;
-            }
-
-            scorePosition(word, row, col, horizontal) {
-                let score = 0;
-                let intersections = 0;
-
-                for (let i = 0; i < word.length; i++) {
-                    const r = horizontal ? row : row + i;
-                    const c = horizontal ? col + i : col;
-                    
-                    if (r < 0 || r >= this.gridSize || c < 0 || c >= this.gridSize) {
-                        continue;
-                    }
-                    
-                    if (this.grid[r][c].letter === word[i]) {
-                        intersections++;
-                        score += 35;
-                        
-                        if ('QXZWKY'.includes(word[i])) {
-                            score += 25;
-                        }
-                    }
-                }
-
-                if (intersections > 1) {
-                    score += intersections * 30;
-                }
-
-                if (intersections === 1) {
-                    score -= 3;
-                }
-
-                const centerRow = this.gridSize / 2;
-                const centerCol = this.gridSize / 2;
-                const distanceFromCenter = Math.abs(row - centerRow) + Math.abs(col - centerCol);
-                score -= distanceFromCenter * 0.005;
-
-                return score;
-            }
-
-            trimGrid() {
-                let minRow = this.gridSize, maxRow = 0;
-                let minCol = this.gridSize, maxCol = 0;
-
-                for (let i = 0; i < this.gridSize; i++) {
-                    for (let j = 0; j < this.gridSize; j++) {
-                        if (this.grid[i] && this.grid[i][j] && this.grid[i][j].letter !== null) {
-                            minRow = Math.min(minRow, i);
-                            maxRow = Math.max(maxRow, i);
-                            minCol = Math.min(minCol, j);
-                            maxCol = Math.max(maxCol, j);
-                        }
-                    }
-                }
-
-                if (minRow === this.gridSize || maxRow === 0) {
-                    return;
-                }
-
-                minRow = Math.max(0, minRow - 1);
-                maxRow = Math.min(this.gridSize - 1, maxRow + 1);
-                minCol = Math.max(0, minCol - 1);
-                maxCol = Math.min(this.gridSize - 1, maxCol + 1);
-
-                const newGrid = [];
-                for (let i = minRow; i <= maxRow; i++) {
-                    newGrid.push(this.grid[i].slice(minCol, maxCol + 1));
-                }
-
-                for (let word of this.placedWords) {
-                    word.row -= minRow;
-                    word.col -= minCol;
-                }
-
-                this.grid = newGrid;
-            }
-
-            renumberWords() {
-                const positions = [];
-
-                for (let word of this.placedWords) {
-                    const key = `${word.row}-${word.col}`;
-                    const existing = positions.find(p => p.key === key);
-                    
-                    if (!existing) {
-                        positions.push({
-                            key: key,
-                            row: word.row,
-                            col: word.col,
-                            words: [word]
-                        });
-                    } else {
-                        existing.words.push(word);
-                    }
-                }
-
-                positions.sort((a, b) => {
-                    if (a.row !== b.row) return a.row - b.row;
-                    return a.col - b.col;
-                });
-
-                for (let i = 0; i < positions.length; i++) {
-                    const pos = positions[i];
-                    for (let word of pos.words) {
-                        word.number = i + 1;
-                    }
-                    
-                    if (pos.row >= 0 && pos.row < this.grid.length && 
-                        pos.col >= 0 && pos.col < this.grid[0].length) {
-                        this.grid[pos.row][pos.col].number = i + 1;
-                    }
-                }
-            }
-        }
-
-        async function generateCrossword() {
-            if (isGenerating) {
-                showMessage("Une génération est déjà en cours!");
-                return;
-            }
-
-            const wordsText = document.getElementById('words').value;
-            const title = document.getElementById('title').value || "Mots Croisés";
-            
-            if (!wordsText.trim()) {
-                showMessage("Veuillez entrer des mots et leurs indices!");
-                return;
-            }
-            
-            const words = parseInput(wordsText);
-            
-            if (words.length === 0) {
-                showMessage("Aucun mot valide trouvé. Vérifiez le format (MOT Indice)");
-                return;
-            }
-            
-            if (words.length < 2) {
-                showMessage("Veuillez entrer au moins 2 mots pour créer des mots entrecroisés");
-                return;
-            }
-
-            isGenerating = true;
-            document.getElementById('message').style.display = 'none';
-            updateProgress(0, '🚀 Initialisation du générateur ULTRA ROBUSTE...');
-
-            // Utiliser setTimeout pour permettre au navigateur de s'actualiser
-            setTimeout(async () => {
-                try {
-                    const generator = new CrosswordGenerator(words);
-                    currentCrossword = await generator.generate();
-                    currentCrossword.title = title;
-                    
-                    if (currentCrossword && currentCrossword.words.length > 0) {
-                        displayCrossword(currentCrossword);
-                        document.getElementById('preview').style.display = 'block';
-                        document.getElementById('progressContainer').style.display = 'none';
-                        
-                        const totalWords = words.length;
-                        const placedWords = currentCrossword.words.length;
-                        
-                        if (placedWords < totalWords) {
-                            const missingWords = words.filter(w =>
-                                !currentCrossword.words.find(pw =>
-                                    pw.word.normalize("NFD").replace(/[\u0300-\u036f]/g, "") ===
-                                    w.word.normalize("NFD").replace(/[\u0300-\u036f]/g, "")
-                                )
-                            );
-                            const missingList = missingWords.map(w => w.originalWord).join(', ');
-                            showMessage(`⚠️ Après des milliers de tentatives: ${placedWords}/${totalWords} mots placés. Mots non placés: ${missingList}. Ces mots sont très difficiles à placer ensemble - essayez de les remplacer par des mots similaires avec plus de lettres communes.`, "error");
-                        } else {
-                            showMessage(`🎉 SUCCÈS PARFAIT! Tous les ${placedWords} mots ont été placés avec succès!`, "success");
-                        }
-                        
-                        document.getElementById('preview').scrollIntoView({ behavior: 'smooth' });
-                    } else {
-                        document.getElementById('progressContainer').style.display = 'none';
-                        showMessage("Erreur lors de la génération. Essayez avec d'autres mots.");
-                    }
-                } catch (error) {
-                    document.getElementById('progressContainer').style.display = 'none';
-                    showMessage("Erreur lors de la génération: " + error.message);
-                    console.error(error);
-                } finally {
-                    isGenerating = false;
-                }
-            }, 100);
-        }
-
-        function displayCrossword(crossword) {
-            const display = document.getElementById('crosswordDisplay');
-            display.innerHTML = '';
-
-            const gridContainer = document.createElement('div');
-            gridContainer.className = 'grid-container';
-            
-            const gridDiv = document.createElement('div');
-            gridDiv.className = 'crossword-grid';
-            gridDiv.style.gridTemplateColumns = `repeat(${crossword.grid[0].length}, 35px)`;
-            gridDiv.style.gridTemplateRows = `repeat(${crossword.grid.length}, 35px)`;
-
-            const gridColor = getSelectedGridColor();
-
-            for (let row of crossword.grid) {
-                for (let cell of row) {
-                    const cellDiv = document.createElement('div');
-                    cellDiv.className = 'cell';
-                    
-                    if (cell.letter === null) {
-                        cellDiv.classList.add('black');
-                    } else {
-                        cellDiv.style.borderColor = gridColor;
-                        if (cell.number) {
-                            const numSpan = document.createElement('span');
-                            numSpan.className = 'cell-number';
-                            numSpan.textContent = cell.number;
-                            cellDiv.appendChild(numSpan);
-                        }
-                    }
-                    
-                    gridDiv.appendChild(cellDiv);
-                }
-            }
-
-            gridContainer.appendChild(gridDiv);
-            display.appendChild(gridContainer);
-
-            const cluesContainer = document.createElement('div');
-            cluesContainer.className = 'clues-container';
-
-            const selectedFont = getSelectedFont();
-
-            const acrossDiv = document.createElement('div');
-            acrossDiv.className = 'clues-section';
-            acrossDiv.style.fontFamily = selectedFont;
-            acrossDiv.innerHTML = '<h3>Horizontal</h3>';
-            crossword.across.forEach(word => {
-                const clueDiv = document.createElement('div');
-                clueDiv.className = 'clue-item';
-                clueDiv.innerHTML = `<span class="clue-number">${word.number}.</span>${word.clue}`;
-                acrossDiv.appendChild(clueDiv);
-            });
-
-            const downDiv = document.createElement('div');
-            downDiv.className = 'clues-section';
-            downDiv.style.fontFamily = selectedFont;
-            downDiv.innerHTML = '<h3>Vertical</h3>';
-            crossword.down.forEach(word => {
-                const clueDiv = document.createElement('div');
-                clueDiv.className = 'clue-item';
-                clueDiv.innerHTML = `<span class="clue-number">${word.number}.</span>${word.clue}`;
-                downDiv.appendChild(clueDiv);
-            });
-
-            cluesContainer.appendChild(acrossDiv);
-            cluesContainer.appendChild(downDiv);
-            display.appendChild(cluesContainer);
-        }
-
-        function downloadPDF(withAnswers = false) {
-            if (!currentCrossword) {
-                showMessage("Veuillez d'abord générer des mots entrecroisés!");
-                return;
-            }
-
-            try {
-                const { jsPDF } = window.jspdf;
-                const doc = new jsPDF({
-                    orientation: 'portrait',
-                    unit: 'mm',
-                    format: 'letter'
-                });
-
-                const pageWidth = 215.9;
-                const pageHeight = 279.4;
-                const margin = 12;
-                const gridColor = getSelectedGridColor();
-                const selectedFont = getSelectedFont().replace(/'/g, '');
-
-                // Titre
-                doc.setFontSize(22);
-                doc.setFont(selectedFont, 'bold');
-                doc.text(currentCrossword.title, pageWidth / 2, margin + 8, { align: 'center' });
-
-                const grid = currentCrossword.grid;
-                const rows = grid.length;
-                const cols = grid[0].length;
-
-                // ESPACE GARANTI POUR LES INDICES: 100mm minimum
-                const cluesHeight = 100;
-                const availableWidth = pageWidth - 2 * margin;
-                const maxGridHeight = pageHeight - margin - 28 - cluesHeight - 5;
-                const cellSizeByWidth = availableWidth / cols;
-                const cellSizeByHeight = maxGridHeight / rows;
-                const cellSize = Math.min(cellSizeByWidth, cellSizeByHeight, 10);
-
-                const gridWidth = cellSize * cols;
-                const gridHeight = cellSize * rows;
-                const gridX = (pageWidth - gridWidth) / 2;
-                const gridY = margin + 22;
-
-                doc.setLineWidth(0.4);
-
-                const hexToRgb = (hex) => {
-                    const r = parseInt(hex.slice(1, 3), 16);
-                    const g = parseInt(hex.slice(3, 5), 16);
-                    const b = parseInt(hex.slice(5, 7), 16);
-                    return { r, g, b };
-                };
-
-                const color = hexToRgb(gridColor);
-
-                // Dessiner la grille
-                for (let i = 0; i < rows; i++) {
-                    for (let j = 0; j < cols; j++) {
-                        const x = gridX + j * cellSize;
-                        const y = gridY + i * cellSize;
-                        const cell = grid[i][j];
-                        
-                        if (cell.letter === null) {
-                            continue;
-                        } else {
-                            doc.setFillColor(255, 255, 255);
-                            doc.setDrawColor(color.r, color.g, color.b);
-                            doc.rect(x, y, cellSize, cellSize, 'FD');
-
-                            if (cell.number && !withAnswers) {
-                                doc.setFontSize(cellSize * 1.3);
-                                doc.setFont(undefined, 'bold');
-                                doc.setTextColor(0, 0, 0);
-                                doc.text(cell.number.toString(), x + cellSize * 0.18, y + cellSize * 0.42);
-                            }
-
-                            if (withAnswers && cell.letter) {
-                                doc.setFontSize(cellSize * 2.5);
-                                doc.setFont(undefined, 'bold');
-                                doc.setTextColor(0, 0, 0);
-                                doc.text(cell.letter, x + cellSize / 2, y + cellSize * 0.73, { align: 'center' });
-                            }
-                        }
-                    }
-                }
-
-                if (withAnswers) {
-                    doc.setFontSize(cellSize * 1.2);
-                    doc.setFont(undefined, 'bold');
-                    doc.setTextColor(0, 0, 0);
-                    
-                    currentCrossword.words.forEach(word => {
-                        const x = gridX + word.col * cellSize;
-                        const y = gridY + word.row * cellSize;
-                        
-                        if (word.horizontal) {
-                            doc.text(word.number.toString(), x - cellSize * 0.6, y + cellSize * 0.65);
-                        } else {
-                            doc.text(word.number.toString(), x + cellSize * 0.3, y - cellSize * 0.15);
-                        }
-                    });
-                }
-
-                // INDICES TOUJOURS EN BAS
-                const cluesY = pageHeight - cluesHeight - margin + 2;
-                const columnWidth = (pageWidth - 2 * margin - 5) / 2;
-
-                doc.setTextColor(0, 0, 0);
-                doc.setFontSize(9);
-                doc.setFont(selectedFont, 'bold');
-                doc.text('Horizontal', margin, cluesY);
-                doc.text('Vertical', margin + columnWidth + 5, cluesY);
-
-                doc.setFontSize(8);
-                doc.setFont(selectedFont, 'normal');
-
-                let acrossY = cluesY + 5;
-                let downY = cluesY + 5;
-                const lineHeight = 3.8;
-                const maxClueWidth = columnWidth - 2;
-
-                currentCrossword.across.forEach(word => {
-                    const clueText = `${word.number}. ${word.clue}`;
-                    const lines = doc.splitTextToSize(clueText, maxClueWidth);
-                    doc.text(lines, margin, acrossY);
-                    acrossY += lines.length * lineHeight;
-                });
-
-                currentCrossword.down.forEach(word => {
-                    const clueText = `${word.number}. ${word.clue}`;
-                    const lines = doc.splitTextToSize(clueText, maxClueWidth);
-                    doc.text(lines, margin + columnWidth + 5, downY);
-                    downY += lines.length * lineHeight;
-                });
-
-                doc.setFontSize(6);
-                doc.setFont(undefined, 'normal');
-                doc.setTextColor(100, 100, 100);
-                doc.text('© The Joyful Classroom', pageWidth - margin, pageHeight - 3, { align: 'right' });
-
-                const filename = withAnswers ?
-                    `${currentCrossword.title}_corrige.pdf` :
-                    `${currentCrossword.title}.pdf`;
-                
-                doc.save(filename);
-                showMessage(`✅ PDF téléchargé: ${filename}`, "success");
-            } catch (error) {
-                showMessage("Erreur lors de la création du PDF: " + error.message);
-                console.error(error);
-            }
-        }
-
-        function downloadPDFWithAnswers() {
-            downloadPDF(true);
-        }
-
-        function downloadPNG() {
-            if (!currentCrossword) {
-                showMessage("Veuillez d'abord générer des mots entrecroisés!");
-                return;
-            }
-
-            try {
-                const canvas = document.createElement('canvas');
-                const width = 2550;
-                const height = 3300;
-                canvas.width = width;
-                canvas.height = height;
-                const ctx = canvas.getContext('2d');
-
-                ctx.fillStyle = '#ffffff';
-                ctx.fillRect(0, 0, width, height);
-
-                const margin = 100;
-                const selectedFont = getSelectedFont().replace(/'/g, '');
-
-                ctx.fillStyle = '#000000';
-                ctx.font = `bold 80px ${selectedFont}`;
-                ctx.textAlign = 'center';
-                ctx.fillText(currentCrossword.title, width / 2, margin + 80);
-
-                const grid = currentCrossword.grid;
-                const rows = grid.length;
-                const cols = grid[0].length;
-
-                // ESPACE GARANTI POUR LES INDICES
-                const cluesHeight = 900;
-                const availableWidth = width - 2 * margin;
-                const maxGridHeight = height - margin - 200 - cluesHeight - 20;
-                const cellSizeByWidth = availableWidth / cols;
-                const cellSizeByHeight = maxGridHeight / rows;
-                const cellSize = Math.min(cellSizeByWidth, cellSizeByHeight, 120);
-
-                const gridWidth = cellSize * cols;
-                const gridHeight = cellSize * rows;
-                const gridX = (width - gridWidth) / 2;
-                const gridY = margin + 180;
-
-                const gridColor = getSelectedGridColor();
-                ctx.lineWidth = 3;
-                ctx.strokeStyle = gridColor;
-
-                for (let i = 0; i < rows; i++) {
-                    for (let j = 0; j < cols; j++) {
-                        const x = gridX + j * cellSize;
-                        const y = gridY + i * cellSize;
-                        const cell = grid[i][j];
-                        
-                        if (cell.letter !== null) {
-                            ctx.strokeRect(x, y, cellSize, cellSize);
-                            
-                            if (cell.number) {
-                                ctx.fillStyle = '#000000';
-                                ctx.font = `bold ${cellSize * 0.28}px Arial`;
-                                ctx.textAlign = 'left';
-                                ctx.fillText(cell.number.toString(), x + cellSize * 0.12, y + cellSize * 0.32);
-                            }
-                        }
-                    }
-                }
-
-                // INDICES TOUJOURS EN BAS
-                const cluesY = height - cluesHeight - margin + 50;
-                const columnWidth = (width - 2 * margin - 60) / 2;
-
-                ctx.fillStyle = '#000000';
-                ctx.font = `bold 40px ${selectedFont}`;
-                ctx.textAlign = 'left';
-                ctx.fillText('Horizontal', margin, cluesY);
-                ctx.fillText('Vertical', margin + columnWidth + 60, cluesY);
-
-                ctx.font = `28px ${selectedFont}`;
-                let acrossY = cluesY + 50;
-                let downY = cluesY + 50;
-                const lineHeight = 40;
-
-                function wrapText(text, maxWidth) {
-                    const words = text.split(' ');
-                    const lines = [];
-                    let currentLine = words[0];
-                    
-                    for (let i = 1; i < words.length; i++) {
-                        const testLine = currentLine + ' ' + words[i];
-                        const metrics = ctx.measureText(testLine);
-                        
-                        if (metrics.width > maxWidth) {
-                            lines.push(currentLine);
-                            currentLine = words[i];
-                        } else {
-                            currentLine = testLine;
-                        }
-                    }
-                    lines.push(currentLine);
-                    return lines;
-                }
-
-                currentCrossword.across.forEach(word => {
-                    const clueText = `${word.number}. ${word.clue}`;
-                    const lines = wrapText(clueText, columnWidth - 20);
-                    
-                    lines.forEach(line => {
-                        ctx.fillText(line, margin, acrossY);
-                        acrossY += lineHeight;
-                    });
-                });
-
-                currentCrossword.down.forEach(word => {
-                    const clueText = `${word.number}. ${word.clue}`;
-                    const lines = wrapText(clueText, columnWidth - 20);
-                    
-                    lines.forEach(line => {
-                        ctx.fillText(line, margin + columnWidth + 60, downY);
-                        downY += lineHeight;
-                    });
-                });
-
-                ctx.fillStyle = '#666666';
-                ctx.font = '20px Arial';
-                ctx.textAlign = 'right';
-                ctx.fillText('© The Joyful Classroom', width - margin, height - 30);
-
-                canvas.toBlob(function(blob) {
-                    const url = URL.createObjectURL(blob);
-                    const a = document.createElement('a');
-                    a.href = url;
-                    a.download = `${currentCrossword.title}.png`;
-                    document.body.appendChild(a);
-                    a.click();
-                    document.body.removeChild(a);
-                    URL.revokeObjectURL(url);
-                    
-                    showMessage(`✅ PNG téléchargé: ${currentCrossword.title}.png`, "success");
-                }, 'image/png');
-            } catch (error) {
-                showMessage("Erreur lors de la création du PNG: " + error.message);
-                console.error(error);
-            }
-        }
-    </script>
+document.getElementById('words').value = exampleText;
+document.getElementById('title').value = "L'automne";
+showMessage("Exemple chargé! Cliquez sur 'Générer les mots entrecroisés'", "success");
+}
+
+function parseInput(text) {
+const lines = text.trim().split('\n').filter(line => line.trim());
+const words = [];
+
+for (let line of lines) {
+const match = line.match(/^([A-ZÀ-ÿ]+)\s+(.+)$/i);
+if (match) {
+words.push({
+word: match[1].toUpperCase().normalize("NFD").replace(/[\u0300-\u036f]/g, ""),
+clue: match[2].trim(),
+originalWord: match[1].toUpperCase()
+});
+}
+}
+
+return words;
+}
+
+function showMessage(text, type = "error") {
+const messageDiv = document.getElementById('message');
+messageDiv.className = type === "success" ? "success-message" : "error-message";
+messageDiv.textContent = text;
+messageDiv.style.display = 'block';
+
+setTimeout(() => {
+if (!isGenerating) {
+messageDiv.style.display = 'none';
+}
+}, 8000);
+}
+
+function updateProgress(percent, text) {
+const progressContainer = document.getElementById('progressContainer');
+const progressBar = document.getElementById('progressBar');
+const progressText = document.getElementById('progressText');
+
+progressContainer.style.display = 'block';
+progressBar.style.width = percent + '%';
+progressBar.textContent = Math.round(percent) + '%';
+progressText.textContent = text;
+}
+
+class CrosswordGenerator {
+constructor(words) {
+this.words = words;
+this.grid = [];
+this.gridSize = 150; // Grille très grande pour maximiser les chances
+this.placedWords = [];
+}
+
+async generate() {
+if (this.words.length === 0) return null;
+
+let attempt = 0;
+let bestResult = null;
+let maxPlaced = 0;
+
+// ⚡ CHANGEMENT CLÉ : Boucle VRAIMENT infinie jusqu'à succès
+while (true) {
+this.initGrid();
+this.placedWords = [];
+
+// Afficher la progression tous les 3 essais
+if (attempt % 3 === 0) {
+const progress = maxPlaced === this.words.length ? 100 : (maxPlaced / this.words.length) * 100;
+let strategy = '';
+const cycle = Math.floor(attempt / 80) % 4;
+if (cycle === 0) strategy = 'LONGUEUR';
+else if (cycle === 1) strategy = 'VOYELLES';
+else if (cycle === 2) strategy = 'LETTRES COMMUNES';
+else strategy = 'ALÉATOIRE';
+
+updateProgress(progress, `⏳ Tentative ${attempt} - Stratégie: ${strategy} - Meilleur: ${maxPlaced}/${this.words.length} mots`);
+await new Promise(resolve => setTimeout(resolve, 0));
+}
+
+// Alterner les stratégies par cycles de 80
+let wordsToPlace;
+const cycle = Math.floor(attempt / 80) % 4;
+
+if (cycle === 0) {
+wordsToPlace = [...this.words].sort((a, b) => b.word.length - a.word.length);
+} else if (cycle === 1) {
+wordsToPlace = [...this.words].sort((a, b) => {
+const vowelsA = (a.word.match(/[AEIOUY]/g) || []).length;
+const vowelsB = (b.word.match(/[AEIOUY]/g) || []).length;
+return vowelsB - vowelsA;
+});
+} else if (cycle === 2) {
+wordsToPlace = [...this.words].sort((a, b) => {
+const commonA = (a.word.match(/[EAISTNR]/g) || []).length;
+const commonB = (b.word.match(/[EAISTNR]/g) || []).length;
+return commonB - commonA;
+});
+} else {
+wordsToPlace = this.shuffleArray([...this.words]);
+}
+
+// Placer le premier mot avec variations
+const firstWord = wordsToPlace[0];
+const horizontal = attempt % 2 === 0;
+let startRow = Math.floor(this.gridSize / 2);
+let startCol = Math.floor(this.gridSize / 2);
+
+const offsetRow = (attempt % 50 - 25) * 2;
+const offsetCol = ((attempt * 7) % 50 - 25) * 2;
+startRow += offsetRow;
+startCol += offsetCol;
+
+if (horizontal) {
+startRow = Math.max(5, Math.min(startRow, this.gridSize - 10));
+startCol = Math.max(5, Math.min(startCol, this.gridSize - firstWord.word.length - 5));
+} else {
+startRow = Math.max(5, Math.min(startRow, this.gridSize - firstWord.word.length - 5));
+startCol = Math.max(5, Math.min(startCol, this.gridSize - 10));
+}
+
+if (!this.placeWord(firstWord, startRow, startCol, horizontal)) {
+continue;
+}
+
+// Essayer de placer tous les autres mots
+for (let i = 1; i < wordsToPlace.length; i++) {
+let placed = false;
+for (let tryCount = 0; tryCount < 8000 && !placed; tryCount++) {
+placed = this.findAndPlaceWord(wordsToPlace[i]);
+}
+}
+
+// Garder le meilleur résultat
+if (this.placedWords.length > maxPlaced) {
+maxPlaced = this.placedWords.length;
+this.trimGrid();
+this.renumberWords();
+bestResult = {
+grid: JSON.parse(JSON.stringify(this.grid)),
+words: JSON.parse(JSON.stringify(this.placedWords)),
+across: this.placedWords.filter(w => w.horizontal).sort((a, b) => a.number - b.number),
+down: this.placedWords.filter(w => !w.horizontal).sort((a, b) => a.number - b.number)
+};
+console.log(`✨ Nouveau record: ${maxPlaced}/${this.words.length} mots placés (tentative ${attempt})`);
+}
+
+// ⚡ SI TOUS LES MOTS SONT PLACÉS, SUCCÈS!
+if (this.placedWords.length === this.words.length) {
+console.log(`🎉 SUCCÈS TOTAL à la tentative ${attempt + 1}!`);
+updateProgress(100, `✅ SUCCÈS! Tous les ${this.words.length} mots sont placés!`);
+break; // SORTIR de la boucle infinie
+}
+
+attempt++;
+
+if (attempt % 500 === 0) {
+console.log(`💪 ${attempt} tentatives, meilleur: ${maxPlaced}/${this.words.length} - ON CONTINUE!`);
+}
+}
+
+return bestResult;
+}
+
+shuffleArray(array) {
+const shuffled = [...array];
+for (let i = shuffled.length - 1; i > 0; i--) {
+const j = Math.floor(Math.random() * (i + 1));
+[shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+}
+return shuffled;
+}
+
+initGrid() {
+this.grid = Array(this.gridSize).fill(null).map(() =>
+Array(this.gridSize).fill(null).map(() => ({ letter: null, number: null }))
+);
+}
+
+placeWord(wordObj, row, col, horizontal) {
+const word = wordObj.word;
+
+if (row < 2 || col < 2 || row >= this.gridSize - 2 || col >= this.gridSize - 2) {
+return false;
+}
+
+const endRow = horizontal ? row : row + word.length - 1;
+const endCol = horizontal ? col + word.length - 1 : col;
+
+if (endRow >= this.gridSize - 2 || endCol >= this.gridSize - 2) {
+return false;
+}
+
+for (let i = 0; i < word.length; i++) {
+const r = horizontal ? row : row + i;
+const c = horizontal ? col + i : col;
+
+if (r < 0 || r >= this.gridSize || c < 0 || c >= this.gridSize) {
+return false;
+}
+
+this.grid[r][c].letter = word[i];
+}
+
+this.placedWords.push({
+word: wordObj.originalWord,
+clue: wordObj.clue,
+row: row,
+col: col,
+horizontal: horizontal,
+number: 0,
+length: word.length
+});
+
+return true;
+}
+
+findAndPlaceWord(wordObj) {
+const word = wordObj.word;
+const possiblePlacements = [];
+
+for (let placedWord of this.placedWords) {
+const placedWordStr = placedWord.word.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+
+for (let i = 0; i < word.length; i++) {
+for (let j = 0; j < placedWordStr.length; j++) {
+if (word[i] === placedWordStr[j]) {
+let newRow, newCol, horizontal;
+
+if (placedWord.horizontal) {
+horizontal = false;
+newRow = placedWord.row - i;
+newCol = placedWord.col + j;
+} else {
+horizontal = true;
+newRow = placedWord.row + j;
+newCol = placedWord.col - i;
+}
+
+if (this.canPlaceWord(word, newRow, newCol, horizontal)) {
+const score = this.scorePosition(word, newRow, newCol, horizontal);
+possiblePlacements.push({
+row: newRow,
+col: newCol,
+horizontal: horizontal,
+score: score
+});
+}
+}
+}
+}
+}
+
+if (possiblePlacements.length > 0) {
+possiblePlacements.sort((a, b) => b.score - a.score);
+const topCount = Math.min(40, possiblePlacements.length);
+const randomIndex = Math.floor(Math.random() * topCount);
+const best = possiblePlacements[randomIndex];
+
+return this.placeWord(wordObj, best.row, best.col, best.horizontal);
+}
+
+return false;
+}
+
+canPlaceWord(word, row, col, horizontal) {
+if (row < 2 || col < 2 || row >= this.gridSize - 2 || col >= this.gridSize - 2) {
+return false;
+}
+
+const endRow = horizontal ? row : row + word.length - 1;
+const endCol = horizontal ? col + word.length - 1 : col;
+
+if (endRow >= this.gridSize - 2 || endCol >= this.gridSize - 2) {
+return false;
+}
+
+let hasIntersection = false;
+
+for (let i = 0; i < word.length; i++) {
+const r = horizontal ? row : row + i;
+const c = horizontal ? col + i : col;
+
+if (r < 0 || r >= this.gridSize || c < 0 || c >= this.gridSize) {
+return false;
+}
+
+const cell = this.grid[r][c].letter;
+
+if (cell !== null) {
+if (cell !== word[i]) {
+return false;
+}
+hasIntersection = true;
+} else {
+if (horizontal) {
+if (r - 1 >= 0 && r + 1 < this.gridSize) {
+if (this.grid[r - 1][c].letter !== null || this.grid[r + 1][c].letter !== null) {
+return false;
+}
+}
+} else {
+if (c - 1 >= 0 && c + 1 < this.gridSize) {
+if (this.grid[r][c - 1].letter !== null || this.grid[r][c + 1].letter !== null) {
+return false;
+}
+}
+}
+}
+}
+
+if (horizontal) {
+if (col > 0 && this.grid[row][col - 1].letter !== null) return false;
+if (endCol < this.gridSize - 1 && this.grid[row][endCol + 1].letter !== null) return false;
+} else {
+if (row > 0 && this.grid[row - 1][col].letter !== null) return false;
+if (endRow < this.gridSize - 1 && this.grid[endRow + 1][col].letter !== null) return false;
+}
+
+return this.placedWords.length === 0 || hasIntersection;
+}
+
+scorePosition(word, row, col, horizontal) {
+let score = 0;
+let intersections = 0;
+
+for (let i = 0; i < word.length; i++) {
+const r = horizontal ? row : row + i;
+const c = horizontal ? col + i : col;
+
+if (r < 0 || r >= this.gridSize || c < 0 || c >= this.gridSize) {
+continue;
+}
+
+if (this.grid[r][c].letter === word[i]) {
+intersections++;
+score += 35;
+
+if ('QXZWKY'.includes(word[i])) {
+score += 25;
+}
+}
+}
+
+if (intersections > 1) {
+score += intersections * 30;
+}
+
+if (intersections === 1) {
+score -= 3;
+}
+
+const centerRow = this.gridSize / 2;
+const centerCol = this.gridSize / 2;
+const distanceFromCenter = Math.abs(row - centerRow) + Math.abs(col - centerCol);
+score -= distanceFromCenter * 0.005;
+
+return score;
+}
+
+trimGrid() {
+let minRow = this.gridSize, maxRow = 0;
+let minCol = this.gridSize, maxCol = 0;
+
+for (let i = 0; i < this.gridSize; i++) {
+for (let j = 0; j < this.gridSize; j++) {
+if (this.grid[i] && this.grid[i][j] && this.grid[i][j].letter !== null) {
+minRow = Math.min(minRow, i);
+maxRow = Math.max(maxRow, i);
+minCol = Math.min(minCol, j);
+maxCol = Math.max(maxCol, j);
+}
+}
+}
+
+if (minRow === this.gridSize || maxRow === 0) {
+return;
+}
+
+minRow = Math.max(0, minRow - 1);
+maxRow = Math.min(this.gridSize - 1, maxRow + 1);
+minCol = Math.max(0, minCol - 1);
+maxCol = Math.min(this.gridSize - 1, maxCol + 1);
+
+const newGrid = [];
+for (let i = minRow; i <= maxRow; i++) {
+newGrid.push(this.grid[i].slice(minCol, maxCol + 1));
+}
+
+for (let word of this.placedWords) {
+word.row -= minRow;
+word.col -= minCol;
+}
+
+this.grid = newGrid;
+}
+
+renumberWords() {
+const positions = [];
+
+for (let word of this.placedWords) {
+const key = `${word.row}-${word.col}`;
+const existing = positions.find(p => p.key === key);
+
+if (!existing) {
+positions.push({
+key: key,
+row: word.row,
+col: word.col,
+words: [word]
+});
+} else {
+existing.words.push(word);
+}
+}
+
+positions.sort((a, b) => {
+if (a.row !== b.row) return a.row - b.row;
+return a.col - b.col;
+});
+
+for (let i = 0; i < positions.length; i++) {
+const pos = positions[i];
+for (let word of pos.words) {
+word.number = i + 1;
+}
+
+if (pos.row >= 0 && pos.row < this.grid.length &&
+pos.col >= 0 && pos.col < this.grid[0].length) {
+this.grid[pos.row][pos.col].number = i + 1;
+}
+}
+}
+}
+
+async function generateCrossword() {
+if (isGenerating) {
+showMessage("Une génération est déjà en cours!");
+return;
+}
+
+const wordsText = document.getElementById('words').value;
+const title = document.getElementById('title').value || "Mots Croisés";
+
+if (!wordsText.trim()) {
+showMessage("Veuillez entrer des mots et leurs indices!");
+return;
+}
+
+const words = parseInput(wordsText);
+
+if (words.length === 0) {
+showMessage("Aucun mot valide trouvé. Vérifiez le format (MOT Indice)");
+return;
+}
+
+if (words.length < 2) {
+showMessage("Veuillez entrer au moins 2 mots pour créer des mots entrecroisés");
+return;
+}
+
+isGenerating = true;
+document.getElementById('message').style.display = 'none';
+updateProgress(0, '🚀 Initialisation du générateur AMÉLIORÉ...');
+
+setTimeout(async () => {
+try {
+const generator = new CrosswordGenerator(words);
+currentCrossword = await generator.generate();
+currentCrossword.title = title;
+
+if (currentCrossword && currentCrossword.words.length > 0) {
+displayCrossword(currentCrossword);
+document.getElementById('preview').style.display = 'block';
+document.getElementById('progressContainer').style.display = 'none';
+
+const totalWords = words.length;
+const placedWords = currentCrossword.words.length;
+
+if (placedWords < totalWords) {
+const missingWords = words.filter(w =>
+!currentCrossword.words.find(pw =>
+pw.word.normalize("NFD").replace(/[\u0300-\u036f]/g, "") ===
+w.word.normalize("NFD").replace(/[\u0300-\u036f]/g, "")
+)
+);
+const missingList = missingWords.map(w => w.originalWord).join(', ');
+showMessage(`⚠️ Après de nombreuses tentatives: ${placedWords}/${totalWords} mots placés. Mots non placés: ${missingList}. Ces mots sont très difficiles à placer ensemble.`, "error");
+} else {
+showMessage(`🎉 SUCCÈS PARFAIT! Tous les ${placedWords} mots ont été placés avec succès!`, "success");
+}
+
+document.getElementById('preview').scrollIntoView({ behavior: 'smooth' });
+} else {
+document.getElementById('progressContainer').style.display = 'none';
+showMessage("Erreur lors de la génération. Essayez avec d'autres mots.");
+}
+} catch (error) {
+document.getElementById('progressContainer').style.display = 'none';
+showMessage("Erreur lors de la génération: " + error.message);
+console.error(error);
+} finally {
+isGenerating = false;
+}
+}, 100);
+}
+
+function displayCrossword(crossword) {
+const display = document.getElementById('crosswordDisplay');
+display.innerHTML = '';
+
+const gridContainer = document.createElement('div');
+gridContainer.className = 'grid-container';
+
+const gridDiv = document.createElement('div');
+gridDiv.className = 'crossword-grid';
+gridDiv.style.gridTemplateColumns = `repeat(${crossword.grid[0].length}, 35px)`;
+gridDiv.style.gridTemplateRows = `repeat(${crossword.grid.length}, 35px)`;
+
+const gridColor = getSelectedGridColor();
+
+for (let row of crossword.grid) {
+for (let cell of row) {
+const cellDiv = document.createElement('div');
+cellDiv.className = 'cell';
+
+if (cell.letter === null) {
+cellDiv.classList.add('black');
+} else {
+cellDiv.style.borderColor = gridColor;
+if (cell.number) {
+const numSpan = document.createElement('span');
+numSpan.className = 'cell-number';
+numSpan.textContent = cell.number;
+cellDiv.appendChild(numSpan);
+}
+}
+
+gridDiv.appendChild(cellDiv);
+}
+}
+
+gridContainer.appendChild(gridDiv);
+display.appendChild(gridContainer);
+
+const cluesContainer = document.createElement('div');
+cluesContainer.className = 'clues-container';
+
+const selectedFont = getSelectedFont();
+
+const acrossDiv = document.createElement('div');
+acrossDiv.className = 'clues-section';
+acrossDiv.style.fontFamily = selectedFont;
+acrossDiv.innerHTML = '<h3>Horizontal</h3>';
+crossword.across.forEach(word => {
+const clueDiv = document.createElement('div');
+clueDiv.className = 'clue-item';
+clueDiv.innerHTML = `<span class="clue-number">${word.number}.</span>${word.clue}`;
+acrossDiv.appendChild(clueDiv);
+});
+
+const downDiv = document.createElement('div');
+downDiv.className = 'clues-section';
+downDiv.style.fontFamily = selectedFont;
+downDiv.innerHTML = '<h3>Vertical</h3>';
+crossword.down.forEach(word => {
+const clueDiv = document.createElement('div');
+clueDiv.className = 'clue-item';
+clueDiv.innerHTML = `<span class="clue-number">${word.number}.</span>${word.clue}`;
+downDiv.appendChild(clueDiv);
+});
+
+cluesContainer.appendChild(acrossDiv);
+cluesContainer.appendChild(downDiv);
+display.appendChild(cluesContainer);
+}
+
+// ⚡ FONCTION AMÉLIORÉE pour calculer la hauteur des indices DYNAMIQUEMENT
+function calculateCluesHeight(doc, crossword, selectedFont, columnWidth, fontSize = 8) {
+doc.setFontSize(fontSize);
+doc.setFont(selectedFont, 'normal');
+  
+const lineHeight = 3.8;
+let maxHeight = 0;
+
+// Calculer hauteur pour Horizontal
+let acrossHeight = 0;
+crossword.across.forEach(word => {
+const clueText = `${word.number}. ${word.clue}`;
+const lines = doc.splitTextToSize(clueText, columnWidth - 2);
+acrossHeight += lines.length * lineHeight;
+});
+
+// Calculer hauteur pour Vertical
+let downHeight = 0;
+crossword.down.forEach(word => {
+const clueText = `${word.number}. ${word.clue}`;
+const lines = doc.splitTextToSize(clueText, columnWidth - 2);
+downHeight += lines.length * lineHeight;
+});
+
+// Prendre la plus grande hauteur + titres + marge
+maxHeight = Math.max(acrossHeight, downHeight);
+maxHeight += 10; // Espace pour les titres "Horizontal" et "Vertical"
+  
+return maxHeight;
+}
+
+function downloadPDF(withAnswers = false) {
+if (!currentCrossword) {
+showMessage("Veuillez d'abord générer des mots entrecroisés!");
+return;
+}
+
+try {
+const { jsPDF } = window.jspdf;
+const doc = new jsPDF({
+orientation: 'portrait',
+unit: 'mm',
+format: 'letter'
+});
+
+const pageWidth = 215.9;
+const pageHeight = 279.4;
+const margin = 12;
+const gridColor = getSelectedGridColor();
+const selectedFont = getSelectedFont().replace(/'/g, '');
+
+// Titre
+doc.setFontSize(22);
+doc.setFont(selectedFont, 'bold');
+doc.text(currentCrossword.title, pageWidth / 2, margin + 8, { align: 'center' });
+
+const grid = currentCrossword.grid;
+const rows = grid.length;
+const cols = grid[0].length;
+
+// ⚡ CALCUL DYNAMIQUE de la hauteur des indices
+const columnWidth = (pageWidth - 2 * margin - 5) / 2;
+const cluesHeight = calculateCluesHeight(doc, currentCrossword, selectedFont, columnWidth) + 5;
+
+// Maintenant on calcule l'espace disponible pour la grille
+const availableWidth = pageWidth - 2 * margin;
+const maxGridHeight = pageHeight - margin - 28 - cluesHeight - 5;
+
+const cellSizeByWidth = availableWidth / cols;
+const cellSizeByHeight = maxGridHeight / rows;
+const cellSize = Math.min(cellSizeByWidth, cellSizeByHeight, 10);
+
+const gridWidth = cellSize * cols;
+const gridHeight = cellSize * rows;
+const gridX = (pageWidth - gridWidth) / 2;
+const gridY = margin + 22;
+
+doc.setLineWidth(0.4);
+
+const hexToRgb = (hex) => {
+const r = parseInt(hex.slice(1, 3), 16);
+const g = parseInt(hex.slice(3, 5), 16);
+const b = parseInt(hex.slice(5, 7), 16);
+return { r, g, b };
+};
+
+const color = hexToRgb(gridColor);
+
+// Dessiner la grille
+for (let i = 0; i < rows; i++) {
+for (let j = 0; j < cols; j++) {
+const x = gridX + j * cellSize;
+const y = gridY + i * cellSize;
+const cell = grid[i][j];
+
+if (cell.letter === null) {
+continue;
+} else {
+doc.setFillColor(255, 255, 255);
+doc.setDrawColor(color.r, color.g, color.b);
+doc.rect(x, y, cellSize, cellSize, 'FD');
+
+if (cell.number && !withAnswers) {
+doc.setFontSize(cellSize * 1.3);
+doc.setFont(undefined, 'bold');
+doc.setTextColor(0, 0, 0);
+doc.text(cell.number.toString(), x + cellSize * 0.18, y + cellSize * 0.42);
+}
+
+if (withAnswers && cell.letter) {
+doc.setFontSize(cellSize * 2.5);
+doc.setFont(undefined, 'bold');
+doc.setTextColor(0, 0, 0);
+doc.text(cell.letter, x + cellSize / 2, y + cellSize * 0.73, { align: 'center' });
+}
+}
+}
+}
+
+if (withAnswers) {
+doc.setFontSize(cellSize * 1.2);
+doc.setFont(undefined, 'bold');
+doc.setTextColor(0, 0, 0);
+
+currentCrossword.words.forEach(word => {
+const x = gridX + word.col * cellSize;
+const y = gridY + word.row * cellSize;
+
+if (word.horizontal) {
+doc.text(word.number.toString(), x - cellSize * 0.6, y + cellSize * 0.65);
+} else {
+doc.text(word.number.toString(), x + cellSize * 0.3, y - cellSize * 0.15);
+}
+});
+}
+
+// ⚡ INDICES TOUJOURS EN BAS avec la hauteur calculée dynamiquement
+const cluesY = pageHeight - cluesHeight - margin + 2;
+
+doc.setTextColor(0, 0, 0);
+doc.setFontSize(9);
+doc.setFont(selectedFont, 'bold');
+doc.text('Horizontal', margin, cluesY);
+doc.text('Vertical', margin + columnWidth + 5, cluesY);
+
+doc.setFontSize(8);
+doc.setFont(selectedFont, 'normal');
+
+let acrossY = cluesY + 5;
+let downY = cluesY + 5;
+const lineHeight = 3.8;
+const maxClueWidth = columnWidth - 2;
+
+currentCrossword.across.forEach(word => {
+const clueText = `${word.number}. ${word.clue}`;
+const lines = doc.splitTextToSize(clueText, maxClueWidth);
+doc.text(lines, margin, acrossY);
+acrossY += lines.length * lineHeight;
+});
+
+currentCrossword.down.forEach(word => {
+const clueText = `${word.number}. ${word.clue}`;
+const lines = doc.splitTextToSize(clueText, maxClueWidth);
+doc.text(lines, margin + columnWidth + 5, downY);
+downY += lines.length * lineHeight;
+});
+
+doc.setFontSize(6);
+doc.setFont(undefined, 'normal');
+doc.setTextColor(100, 100, 100);
+doc.text('© The Joyful Classroom', pageWidth - margin, pageHeight - 3, { align: 'right' });
+
+const filename = withAnswers ?
+`${currentCrossword.title}_corrige.pdf` :
+`${currentCrossword.title}.pdf`;
+
+doc.save(filename);
+showMessage(`✅ PDF téléchargé: ${filename}`, "success");
+} catch (error) {
+showMessage("Erreur lors de la création du PDF: " + error.message);
+console.error(error);
+}
+}
+
+function downloadPDFWithAnswers() {
+downloadPDF(true);
+}
+
+// ⚡ FONCTION PNG AMÉLIORÉE avec calcul dynamique des indices
+function downloadPNG() {
+if (!currentCrossword) {
+showMessage("Veuillez d'abord générer des mots entrecroisés!");
+return;
+}
+
+try {
+const canvas = document.createElement('canvas');
+const width = 2550;
+const height = 3300;
+canvas.width = width;
+canvas.height = height;
+
+const ctx = canvas.getContext('2d');
+
+ctx.fillStyle = '#ffffff';
+ctx.fillRect(0, 0, width, height);
+
+const margin = 100;
+const selectedFont = getSelectedFont().replace(/'/g, '');
+
+ctx.fillStyle = '#000000';
+ctx.font = `bold 80px ${selectedFont}`;
+ctx.textAlign = 'center';
+ctx.fillText(currentCrossword.title, width / 2, margin + 80);
+
+const grid = currentCrossword.grid;
+const rows = grid.length;
+const cols = grid[0].length;
+
+// ⚡ CALCUL DYNAMIQUE de la hauteur des indices
+function calculateCanvasCluesHeight() {
+ctx.font = `28px ${selectedFont}`;
+const lineHeight = 40;
+const columnWidth = (width - 2 * margin - 60) / 2;
+let maxHeight = 0;
+
+function wrapText(text, maxWidth) {
+const words = text.split(' ');
+const lines = [];
+let currentLine = words[0];
+
+for (let i = 1; i < words.length; i++) {
+const testLine = currentLine + ' ' + words[i];
+const metrics = ctx.measureText(testLine);
+if (metrics.width > maxWidth) {
+lines.push(currentLine);
+currentLine = words[i];
+} else {
+currentLine = testLine;
+}
+}
+lines.push(currentLine);
+return lines;
+}
+
+let acrossHeight = 0;
+currentCrossword.across.forEach(word => {
+const clueText = `${word.number}. ${word.clue}`;
+const lines = wrapText(clueText, columnWidth - 20);
+acrossHeight += lines.length * lineHeight;
+});
+
+let downHeight = 0;
+currentCrossword.down.forEach(word => {
+const clueText = `${word.number}. ${word.clue}`;
+const lines = wrapText(clueText, columnWidth - 20);
+downHeight += lines.length * lineHeight;
+});
+
+maxHeight = Math.max(acrossHeight, downHeight);
+maxHeight += 100; // Espace pour les titres
+return maxHeight;
+}
+
+const cluesHeight = calculateCanvasCluesHeight();
+
+const availableWidth = width - 2 * margin;
+const maxGridHeight = height - margin - 200 - cluesHeight - 20;
+
+const cellSizeByWidth = availableWidth / cols;
+const cellSizeByHeight = maxGridHeight / rows;
+const cellSize = Math.min(cellSizeByWidth, cellSizeByHeight, 120);
+
+const gridWidth = cellSize * cols;
+const gridHeight = cellSize * rows;
+const gridX = (width - gridWidth) / 2;
+const gridY = margin + 180;
+
+const gridColor = getSelectedGridColor();
+ctx.lineWidth = 3;
+ctx.strokeStyle = gridColor;
+
+for (let i = 0; i < rows; i++) {
+for (let j = 0; j < cols; j++) {
+const x = gridX + j * cellSize;
+const y = gridY + i * cellSize;
+const cell = grid[i][j];
+
+if (cell.letter !== null) {
+ctx.strokeRect(x, y, cellSize, cellSize);
+
+if (cell.number) {
+ctx.fillStyle = '#000000';
+ctx.font = `bold ${cellSize * 0.28}px Arial`;
+ctx.textAlign = 'left';
+ctx.fillText(cell.number.toString(), x + cellSize * 0.12, y + cellSize * 0.32);
+}
+}
+}
+}
+
+// ⚡ INDICES TOUJOURS EN BAS avec hauteur calculée
+const cluesY = height - cluesHeight - margin + 50;
+const columnWidth = (width - 2 * margin - 60) / 2;
+
+ctx.fillStyle = '#000000';
+ctx.font = `bold 40px ${selectedFont}`;
+ctx.textAlign = 'left';
+ctx.fillText('Horizontal', margin, cluesY);
+ctx.fillText('Vertical', margin + columnWidth + 60, cluesY);
+
+ctx.font = `28px ${selectedFont}`;
+let acrossY = cluesY + 50;
+let downY = cluesY + 50;
+const lineHeight = 40;
+
+function wrapText(text, maxWidth) {
+const words = text.split(' ');
+const lines = [];
+let currentLine = words[0];
+
+for (let i = 1; i < words.length; i++) {
+const testLine = currentLine + ' ' + words[i];
+const metrics = ctx.measureText(testLine);
+if (metrics.width > maxWidth) {
+lines.push(currentLine);
+currentLine = words[i];
+} else {
+currentLine = testLine;
+}
+}
+lines.push(currentLine);
+return lines;
+}
+
+currentCrossword.across.forEach(word => {
+const clueText = `${word.number}. ${word.clue}`;
+const lines = wrapText(clueText, columnWidth - 20);
+
+lines.forEach(line => {
+ctx.fillText(line, margin, acrossY);
+acrossY += lineHeight;
+});
+});
+
+currentCrossword.down.forEach(word => {
+const clueText = `${word.number}. ${word.clue}`;
+const lines = wrapText(clueText, columnWidth - 20);
+
+lines.forEach(line => {
+ctx.fillText(line, margin + columnWidth + 60, downY);
+downY += lineHeight;
+});
+});
+
+ctx.fillStyle = '#666666';
+ctx.font = '20px Arial';
+ctx.textAlign = 'right';
+ctx.fillText('© The Joyful Classroom', width - margin, height - 30);
+
+canvas.toBlob(function(blob) {
+const url = URL.createObjectURL(blob);
+const a = document.createElement('a');
+a.href = url;
+a.download = `${currentCrossword.title}.png`;
+document.body.appendChild(a);
+a.click();
+document.body.removeChild(a);
+URL.revokeObjectURL(url);
+
+showMessage(`✅ PNG téléchargé: ${currentCrossword.title}.png`, "success");
+}, 'image/png');
+
+} catch (error) {
+showMessage("Erreur lors de la création du PNG: " + error.message);
+console.error(error);
+}
+}
+
+</script>
 </body>
 </html>
