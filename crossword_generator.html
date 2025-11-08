@@ -656,19 +656,53 @@ placed = this.findAndPlaceWord(wordsToPlace[i]);
 
 // Vérifier si on a placé des mots
 if (this.placedWords.length > maxPlaced) {
-this.trimGrid();
-this.renumberWords();
-
-// ⚡ VÉRIFICATION CRITIQUE : Tous les mots valides dans la grille?
-if (!this.verifyAllWordsInGrid()) {
-console.log(`⚠️ ${this.placedWords.length} mots placés mais invalides après trimGrid()`);
+// ⚡ VÉRIFICATION #1: AVANT trimGrid - Compter les mots réellement placés
+if (this.placedWords.length !== this.words.length) {
+// Pas tous les mots placés, mais tracker le meilleur score
+if (this.placedWords.length > maxPlaced) {
+maxPlaced = this.placedWords.length;
+console.log(`📊 Nouveau record partiel: ${maxPlaced}/${this.words.length} mots`);
+}
 attempt++;
 continue;
 }
 
-// ⚡ SI TOUS LES MOTS SONT PLACÉS, SUCCÈS IMMÉDIAT!
-if (this.placedWords.length === this.words.length) {
+// ⚡ VÉRIFICATION #2: AVANT trimGrid - Vérifier que chaque mot d'entrée est bien placé
+const missingWords = this.findMissingWords();
+if (missingWords.length > 0) {
+console.log(`⚠️ ${missingWords.length} mots manquants: ${missingWords.map(w => w.originalWord).join(', ')}`);
+attempt++;
+continue;
+}
+
+// ⚡ VÉRIFICATION #3: AVANT trimGrid - Tous les mots sont valides dans la grille?
+if (!this.verifyAllWordsInGrid()) {
+console.log(`⚠️ ${this.placedWords.length} mots placés mais invalides avant trimGrid()`);
+attempt++;
+continue;
+}
+
+// Maintenant on peut trim et renumber en sécurité
+this.trimGrid();
+this.renumberWords();
+
+// ⚡ VÉRIFICATION #4: APRÈS trimGrid - Tous les mots sont encore valides?
+if (!this.verifyAllWordsInGrid()) {
+console.log(`⚠️ ${this.placedWords.length} mots invalides après trimGrid()`);
+attempt++;
+continue;
+}
+
+// ⚡ VÉRIFICATION #5: APRÈS trimGrid - Compte final
+if (this.placedWords.length !== this.words.length) {
+console.log(`⚠️ Nombre de mots incorrect après trimGrid: ${this.placedWords.length}/${this.words.length}`);
+attempt++;
+continue;
+}
+
+// ✅ TOUTES LES VÉRIFICATIONS PASSÉES = SUCCÈS GARANTI!
 console.log(`🎉 SUCCÈS TOTAL VÉRIFIÉ à la tentative ${attempt + 1}!`);
+maxPlaced = this.words.length; // Mettre à jour pour l'affichage
 updateProgress(100, `✅ SUCCÈS! Tous les ${this.words.length} mots sont placés!`);
 
 // Retourner le résultat complet
@@ -679,18 +713,6 @@ across: this.placedWords.filter(w => w.horizontal).sort((a, b) => a.number - b.n
 down: this.placedWords.filter(w => !w.horizontal).sort((a, b) => a.number - b.number),
 complete: true
 };
-}
-
-// Sauvegarder le meilleur résultat incomplet (pour référence seulement)
-maxPlaced = this.placedWords.length;
-bestResult = {
-grid: JSON.parse(JSON.stringify(this.grid)),
-words: JSON.parse(JSON.stringify(this.placedWords)),
-across: this.placedWords.filter(w => w.horizontal).sort((a, b) => a.number - b.number),
-down: this.placedWords.filter(w => !w.horizontal).sort((a, b) => a.number - b.number),
-complete: false
-};
-console.log(`✨ Nouveau record: ${maxPlaced}/${this.words.length} mots (tentative ${attempt + 1})`);
 }
 
 attempt++;
@@ -998,6 +1020,23 @@ return false;
 }
 }
 return true;
+}
+
+// ⚡ NOUVELLE MÉTHODE: Trouver les mots qui n'ont pas été placés
+findMissingWords() {
+const missingWords = [];
+for (let inputWord of this.words) {
+const inputWordNormalized = inputWord.word.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+const found = this.placedWords.find(placedWord => {
+const placedWordNormalized = placedWord.word.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+return placedWordNormalized === inputWordNormalized;
+});
+
+if (!found) {
+missingWords.push(inputWord);
+}
+}
+return missingWords;
 }
 }
 
