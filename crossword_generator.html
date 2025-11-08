@@ -1094,8 +1094,8 @@ VENT Il souffle plus fort en automne et fait danser les feuilles`;
                 const rows = grid.length;
                 const cols = grid[0].length;
                 
-                // Espace fixe pour les indices en bas (45mm)
-                const cluesHeight = 45;
+                // Espace AUGMENTÉ pour les indices en bas (60mm au lieu de 45mm)
+                const cluesHeight = 60;
                 
                 // Maximiser l'espace pour la grille
                 const availableWidth = pageWidth - 2 * margin;
@@ -1103,7 +1103,7 @@ VENT Il souffle plus fort en automne et fait danser les feuilles`;
                 
                 const cellSizeByWidth = availableWidth / cols;
                 const cellSizeByHeight = maxGridHeight / rows;
-                const cellSize = Math.min(cellSizeByWidth, cellSizeByHeight, 15);
+                const cellSize = Math.min(cellSizeByWidth, cellSizeByHeight, 12); // Réduit de 15 à 12mm max
                 
                 const gridWidth = cellSize * cols;
                 const gridHeight = cellSize * rows;
@@ -1193,33 +1193,29 @@ VENT Il souffle plus fort en automne et fait danser les feuilles`;
                 const lineHeight = 5.4; // Ajusté pour la police plus grosse (10.5)
                 const maxClueWidth = columnWidth - 2;
 
-                // Indices horizontaux
+                // Indices horizontaux - TOUJOURS afficher tous les indices
                 currentCrossword.across.forEach(word => {
                     const clueText = `${word.number}. ${word.clue}`;
                     const lines = doc.splitTextToSize(clueText, maxClueWidth);
                     
-                    if (acrossY + lines.length * lineHeight < pageHeight - margin) {
-                        doc.text(lines, margin, acrossY);
-                        acrossY += lines.length * lineHeight;
-                    }
+                    doc.text(lines, margin, acrossY);
+                    acrossY += lines.length * lineHeight;
                 });
 
-                // Indices verticaux
+                // Indices verticaux - TOUJOURS afficher tous les indices
                 currentCrossword.down.forEach(word => {
                     const clueText = `${word.number}. ${word.clue}`;
                     const lines = doc.splitTextToSize(clueText, maxClueWidth);
                     
-                    if (downY + lines.length * lineHeight < pageHeight - margin) {
-                        doc.text(lines, margin + columnWidth + 5, downY);
-                        downY += lines.length * lineHeight;
-                    }
+                    doc.text(lines, margin + columnWidth + 5, downY);
+                    downY += lines.length * lineHeight;
                 });
 
-                // Copyright en bas à droite
+                // Copyright en bas à droite (positionné au-dessus de la marge)
                 doc.setFontSize(6);
                 doc.setFont(undefined, 'normal');
                 doc.setTextColor(100, 100, 100);
-                doc.text('© The Joyful Classroom', pageWidth - margin, pageHeight - margin + 2, { align: 'right' });
+                doc.text('© The Joyful Classroom', pageWidth - margin, pageHeight - 3, { align: 'right' });
 
                 // Sauvegarder
                 const filename = withAnswers ? 
@@ -1271,13 +1267,13 @@ VENT Il souffle plus fort en automne et fait danser les feuilles`;
                 const rows = grid.length;
                 const cols = grid[0].length;
 
-                const cluesHeight = 580;
+                const cluesHeight = 700; // Augmenté de 580 à 700 pour plus d'espace pour les indices
                 const availableWidth = width - 2 * margin;
                 const maxGridHeight = height - margin - 200 - cluesHeight - 20;
                 
                 const cellSizeByWidth = availableWidth / cols;
                 const cellSizeByHeight = maxGridHeight / rows;
-                const cellSize = Math.min(cellSizeByWidth, cellSizeByHeight, 150);
+                const cellSize = Math.min(cellSizeByWidth, cellSizeByHeight, 130); // Réduit de 150 à 130
                 
                 const gridWidth = cellSize * cols;
                 const gridHeight = cellSize * rows;
@@ -1342,37 +1338,33 @@ VENT Il souffle plus fort en automne et fait danser les feuilles`;
                     return lines;
                 }
 
-                // Indices horizontaux
+                // Indices horizontaux - TOUJOURS afficher tous les indices
                 currentCrossword.across.forEach(word => {
                     const clueText = `${word.number}. ${word.clue}`;
                     const lines = wrapText(clueText, columnWidth - 20);
                     
-                    if (acrossY + lines.length * lineHeight < height - margin) {
-                        lines.forEach(line => {
-                            ctx.fillText(line, margin, acrossY);
-                            acrossY += lineHeight;
-                        });
-                    }
+                    lines.forEach(line => {
+                        ctx.fillText(line, margin, acrossY);
+                        acrossY += lineHeight;
+                    });
                 });
 
-                // Indices verticaux
+                // Indices verticaux - TOUJOURS afficher tous les indices
                 currentCrossword.down.forEach(word => {
                     const clueText = `${word.number}. ${word.clue}`;
                     const lines = wrapText(clueText, columnWidth - 20);
                     
-                    if (downY + lines.length * lineHeight < height - margin) {
-                        lines.forEach(line => {
-                            ctx.fillText(line, margin + columnWidth + 60, downY);
-                            downY += lineHeight;
-                        });
-                    }
+                    lines.forEach(line => {
+                        ctx.fillText(line, margin + columnWidth + 60, downY);
+                        downY += lineHeight;
+                    });
                 });
 
-                // Copyright en bas à droite
+                // Copyright en bas à droite (positionné au-dessus de la marge)
                 ctx.fillStyle = '#666666';
                 ctx.font = '20px Arial';
                 ctx.textAlign = 'right';
-                ctx.fillText('© The Joyful Classroom', width - margin, height - margin + 10);
+                ctx.fillText('© The Joyful Classroom', width - margin, height - 30);
 
                 // Convertir en PNG et télécharger
                 canvas.toBlob(function(blob) {
