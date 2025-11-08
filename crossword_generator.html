@@ -616,26 +616,73 @@ VENT Il souffle plus fort en automne et fait danser les feuilles`;
                     
                     // Afficher la progression tous les 10 essais
                     if (attempt % 10 === 0 && attempt > 0) {
-                        const progressMsg = `⏳ MODE ULTRA ROBUSTE: Tentative ${attempt}/100... Meilleur résultat: ${maxPlaced}/${this.words.length} mots`;
+                        let strategy = '';
+                        if (attempt < 25) strategy = 'LONGUEUR';
+                        else if (attempt < 50) strategy = 'VOYELLES';
+                        else if (attempt < 75) strategy = 'LETTRES COMMUNES';
+                        else strategy = 'ALÉATOIRE';
+                        
+                        const progressMsg = `⏳ Stratégie ${strategy}: ${attempt}/100... Meilleur: ${maxPlaced}/${this.words.length} mots`;
                         document.getElementById('message').textContent = progressMsg;
                     }
                     
                     if (this.words.length === 0) return null;
                     
-                    // Mélanger les mots pour chaque tentative (sauf la toute première)
-                    // Cela permet d'explorer BEAUCOUP plus de configurations
-                    let wordsToPlace = attempt === 0 ? 
-                        [...this.words].sort((a, b) => b.word.length - a.word.length) :
-                        this.shuffleArray([...this.words]);
+                    // 🎯 STRATÉGIE MULTI-APPROCHE: 4 méthodes différentes!
+                    let wordsToPlace;
                     
-                    // Place le premier mot avec variation d'orientation et de position
+                    if (attempt < 25) {
+                        // Stratégie 1: Tri par LONGUEUR (mots longs d'abord)
+                        wordsToPlace = [...this.words].sort((a, b) => b.word.length - a.word.length);
+                    } else if (attempt < 50) {
+                        // Stratégie 2: Tri par NOMBRE DE VOYELLES (plus de voyelles = plus facile à connecter)
+                        wordsToPlace = [...this.words].sort((a, b) => {
+                            const vowelsA = (a.word.match(/[AEIOUY]/g) || []).length;
+                            const vowelsB = (b.word.match(/[AEIOUY]/g) || []).length;
+                            return vowelsB - vowelsA;
+                        });
+                    } else if (attempt < 75) {
+                        // Stratégie 3: Tri par LETTRES COMMUNES (E, A, I, S, T, N, R)
+                        wordsToPlace = [...this.words].sort((a, b) => {
+                            const commonA = (a.word.match(/[EAISTNR]/g) || []).length;
+                            const commonB = (b.word.match(/[EAISTNR]/g) || []).length;
+                            return commonB - commonA;
+                        });
+                    } else {
+                        // Stratégie 4: COMPLÈTEMENT ALÉATOIRE
+                        wordsToPlace = this.shuffleArray([...this.words]);
+                    }
+                    
+                    // Place le premier mot avec MAXIMUM de variation
                     const firstWord = wordsToPlace[0];
-                    const horizontal = attempt % 2 === 0; // Alterner entre horizontal et vertical
                     
-                    // Varier LARGEMENT la position de départ pour MAXIMUM de diversité
-                    const offsetVariation = (attempt % 10) - 5; // -5, -4, -3, -2, -1, 0, 1, 2, 3, 4
-                    const startRow = Math.floor(this.gridSize / 2) + offsetVariation * 2;
-                    const startCol = Math.floor((this.gridSize - firstWord.word.length) / 2) + offsetVariation * 2;
+                    // Alterner orientation toutes les 2 tentatives (plus de variété)
+                    const horizontal = attempt % 2 === 0;
+                    
+                    // VARIATION MASSIVE de position: explorer toute la grille!
+                    // Au lieu de juste autour du centre, essayer 20 positions différentes
+                    const positionVariant = attempt % 20;
+                    let startRow, startCol;
+                    
+                    if (positionVariant < 5) {
+                        // Centre avec petites variations
+                        const offset = (positionVariant - 2) * 3;
+                        startRow = Math.floor(this.gridSize / 2) + offset;
+                        startCol = Math.floor((this.gridSize - firstWord.word.length) / 2) + offset;
+                    } else if (positionVariant < 10) {
+                        // Quart supérieur gauche
+                        startRow = Math.floor(this.gridSize / 4) + (positionVariant - 5) * 2;
+                        startCol = Math.floor(this.gridSize / 4) + (positionVariant - 5) * 2;
+                    } else if (positionVariant < 15) {
+                        // Quart supérieur droit
+                        startRow = Math.floor(this.gridSize / 4) + (positionVariant - 10) * 2;
+                        startCol = Math.floor(3 * this.gridSize / 4) - firstWord.word.length + (positionVariant - 10) * 2;
+                    } else {
+                        // Autres positions aléatoires
+                        const randomOffset = (positionVariant - 15) * 5;
+                        startRow = Math.floor(this.gridSize / 3) + randomOffset;
+                        startCol = Math.floor(this.gridSize / 3) + randomOffset;
+                    }
                     
                     this.placeWord(firstWord, startRow, startCol, horizontal);
                     
@@ -762,8 +809,8 @@ VENT Il souffle plus fort en automne et fait danser les feuilles`;
                     // Trier par score (nombre d'intersections)
                     possiblePlacements.sort((a, b) => b.score - a.score);
                     
-                    // Prendre une des meilleures positions (avec un peu d'aléatoire pour MAXIMUM de variété)
-                    const topCount = Math.min(10, possiblePlacements.length);
+                    // Prendre une des meilleures positions (MAXIMUM de variété)
+                    const topCount = Math.min(15, possiblePlacements.length);
                     const randomIndex = Math.floor(Math.random() * topCount);
                     const best = possiblePlacements[randomIndex];
                     
@@ -840,20 +887,30 @@ VENT Il souffle plus fort en automne et fait danser les feuilles`;
                     
                     if (this.grid[r][c].letter === word[i]) {
                         intersections++;
-                        score += 20; // Bonus ENCORE plus élevé (de 15 à 20)
+                        score += 25; // Bonus ENCORE plus élevé (de 20 à 25)
+                        
+                        // BONUS EXTRA pour les lettres rares (Q, X, Z, W, K, Y)
+                        if ('QXZWKY'.includes(word[i])) {
+                            score += 15; // Lettres rares valent plus!
+                        }
                     }
                 }
                 
                 // Bonus ÉNORME pour les mots avec plusieurs intersections
                 if (intersections > 1) {
-                    score += intersections * 10; // Bonus exponentiel augmenté (de 5 à 10)
+                    score += intersections * 20; // Bonus exponentiel MASSIF (de 10 à 20)
                 }
                 
-                // Bonus pour les positions plus centrales
+                // PÉNALITÉ si le mot n'a qu'une seule intersection (on veut des grilles denses)
+                if (intersections === 1) {
+                    score -= 5;
+                }
+                
+                // Bonus pour les positions plus centrales (mais moins important)
                 const centerRow = this.gridSize / 2;
                 const centerCol = this.gridSize / 2;
                 const distanceFromCenter = Math.abs(row - centerRow) + Math.abs(col - centerCol);
-                score -= distanceFromCenter * 0.02; // Réduit la pénalité (de 0.05 à 0.02)
+                score -= distanceFromCenter * 0.01; // Pénalité minimale
                 
                 return score;
             }
@@ -955,7 +1012,7 @@ VENT Il souffle plus fort en automne et fait danser les feuilles`;
 
             // Afficher le chargement
             document.getElementById('message').className = 'loading';
-            document.getElementById('message').textContent = '⏳ MODE ULTRA ROBUSTE: L\'algorithme teste jusqu\'à 100 configurations différentes pour placer TOUS les mots (30-90 secondes)';
+            document.getElementById('message').textContent = '⏳ MODE ULTRA ROBUSTE - 4 STRATÉGIES: L\'algorithme teste 100 configurations avec 4 approches différentes (longueur, voyelles, lettres communes, aléatoire) - 30-90 sec';
             document.getElementById('message').style.display = 'block';
 
             setTimeout(() => {
